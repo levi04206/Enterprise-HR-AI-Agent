@@ -1,0 +1,44 @@
+# Enterprise HR AI Agent
+
+基于 Spring Boot 3.5、Spring AI 1.1.6、MyBatis-Plus、MySQL 和内存向量库的企业 HR 智能体 Demo。
+
+## 核心能力
+
+- 上传企业制度 PDF/TXT 文档，完成读取、分块、Embedding 和向量入库。
+- `/api/v1/chat/stream` 提供 SSE 流式对话。
+- RAG 检索企业制度 Top 3 片段后注入 System Prompt。
+- Function Calling 工具支持查询员工联系方式和年假余额。
+
+## 启动前准备
+
+1. 创建 MySQL 数据库：
+
+```sql
+CREATE DATABASE enterprise_hr_ai_agent DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+2. 配置环境变量：
+
+```powershell
+$env:AI_API_KEY="你的 OpenAI 兼容 API Key"
+$env:AI_BASE_URL="https://api.deepseek.com"
+$env:AI_CHAT_MODEL="deepseek-chat"
+```
+
+3. 修改 `src/main/resources/application.yml` 中的 MySQL 用户名和密码。
+
+## 常用接口
+
+上传知识库文档：
+
+```bash
+curl -F "file=@2026员工考勤管理办法.txt" http://localhost:8080/api/v1/knowledge/ingest
+```
+
+流式对话：
+
+```bash
+curl -N -H "Content-Type: application/json" \
+  -d "{\"message\":\"张三还剩多少年假？\"}" \
+  http://localhost:8080/api/v1/chat/stream
+```

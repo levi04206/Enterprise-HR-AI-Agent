@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: enterprise-hr-ai-agent
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/enterprise_hr_ai_agent?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+
+  sql:
+    init:
+      # Demo 阶段自动执行 schema.sql/data.sql，方便首次启动建表和导入样例数据。
+      # 生产环境建议改为 never，并使用 Flyway/Liquibase 管理变更。
+      mode: always
+      continue-on-error: true
+
+  ai:
+    openai:
+      # 建议通过环境变量注入，避免把密钥提交到代码仓库。
+      api-key: ${AI_API_KEY:replace-me}
+      # DeepSeek OpenAI 兼容地址示例。如果使用 OpenAI 官方，可改为 https://api.openai.com
+      base-url: ${AI_BASE_URL:https://api.deepseek.com}
+      chat:
+        options:
+          model: ${AI_CHAT_MODEL:deepseek-chat}
+          temperature: 0.2
+      embedding:
+        options:
+          # DeepSeek 当前主要提供 Chat/Reasoner；生产环境建议换成可用的 OpenAI 兼容 embedding 模型端点。
+          model: ${AI_EMBEDDING_MODEL:text-embedding-3-small}
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+
+app:
+  ai:
+    top-k: 3
+    # Demo 使用内存向量库。后续切 Redis Stack 时，可增加 spring-ai Redis VectorStore starter 并替换 VectorStoreConfig。
+    vector-store: in-memory
