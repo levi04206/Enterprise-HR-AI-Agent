@@ -78,6 +78,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- 测试环境使用 H2 模拟关系型数据库，保证没有本地 MySQL 时也能跑通自动化测试。 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

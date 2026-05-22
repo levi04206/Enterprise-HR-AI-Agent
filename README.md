@@ -70,3 +70,17 @@ curl -H "Content-Type: application/json" \
   -d "{\"empId\":1,\"startDate\":\"2026-07-01\",\"endDate\":\"2026-07-02\",\"status\":\"PENDING\"}" \
   http://localhost:8080/api/v1/leave-records
 ```
+
+## 自动化验证
+
+测试环境使用 H2 内存数据库，不依赖本地 MySQL、Redis 或真实大模型 API：
+
+```powershell
+mvn test
+```
+
+打包：
+
+```powershell
+mvn "-Dmaven.test.skip=true" package
+```
