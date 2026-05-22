@@ -47,3 +47,24 @@
 1. 配置 GitHub 远程仓库并推送代码。
 2. 本机安装或登录 GitHub CLI 后，可由 Codex 自动创建 GitHub 仓库。
 3. 后续可增加 Redis Stack VectorStore、对话历史、权限校验、前端页面和接口联调。
+
+## 2026-05-22 第二次迭代
+
+### 本次完成内容
+
+1. 添加员工 REST 管理接口：
+   - `POST /api/v1/employees`
+   - `GET /api/v1/employees`
+   - `GET /api/v1/employees/{id}`
+2. 添加请假记录 REST 管理接口：
+   - `POST /api/v1/leave-records`
+   - `GET /api/v1/leave-records/employee/{empId}`
+3. 新增员工和请假记录 DTO，避免控制器直接暴露实体。
+4. 新增 `EmployeeService` 和 `LeaveRecordService`，把业务校验从 Controller 中拆出。
+5. 新增全局异常处理器，统一返回参数错误和业务错误。
+6. 添加 `docker-compose.yml`，提供本地 MySQL 8.4 和 Redis Stack 环境。
+7. 更新 `README.md`，补充 Docker 启动和新增管理接口示例。
+
+### 当前状态
+
+后端除了 AI 对话和知识库上传外，已经具备基础 HR 数据维护接口，便于后续前端页面和 Function Calling 联调。
