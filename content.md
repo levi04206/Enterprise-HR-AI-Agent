@@ -261,3 +261,25 @@ RAG 入库现在不仅写入向量库，也能在关系型数据库中追踪文�
 ### 当前状态
 
 应用启动后可以直接通过 Swagger UI 查看和调试接口，后续做真实 AI/RAG 联调和前端开发会更方便。
+
+## 2026-05-23 第十三次迭代
+
+### 本次完成内容
+
+1. 新增真实 AI/RAG 联调脚本：
+   - `scripts/smoke-ai-rag.ps1`
+2. 新增样例制度文档：
+   - `docs/samples/2026员工考勤管理办法.txt`
+3. 脚本覆盖完整链路：
+   - 检查 `/actuator/health`
+   - 检查 `/api/v1/diagnostics/chat`
+   - 检查 `/api/v1/diagnostics/embedding`
+   - 上传样例制度文档到知识库
+   - 创建对话会话
+   - 调用 `/api/v1/chat/stream` 进行 SSE 流式对话
+   - 查询会话消息，确认用户问题和助手回复已落库
+4. 更新 `README.md`，补充真实 AI/RAG 联调步骤。
+
+### 当前状态
+
+当应用在 IDEA 中以默认 profile 启动，并且 DeepSeek 与 DashScope 环境变量配置正确后，可以直接运行脚本验证真实模型、RAG 入库、流式对话和会话落库的端到端链路。

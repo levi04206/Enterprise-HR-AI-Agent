@@ -111,6 +111,16 @@ curl "http://localhost:8080/api/v1/employees?keyword=研发"
 
 说明：`local` profile 的 Chat/RAG 真实调用仍需要可用的大模型和 Embedding API。它的用途是先验证后端主体服务、数据库映射和普通 REST 接口。
 
+真实 AI/RAG 联调：
+
+先在 IDEA 中使用默认 profile 启动应用，并确保 `OPENAI_API_KEY`、`DASHSCOPE_API_KEY` 已配置到启动环境。应用启动后执行：
+
+```powershell
+.\scripts\smoke-ai-rag.ps1
+```
+
+该脚本会依次检查健康端点、Chat 模型、Embedding 模型，上传 `docs/samples/2026员工考勤管理办法.txt`，创建会话，并调用 SSE 对话接口验证 RAG 回答和消息落库。
+
 ## 常用接口
 
 上传知识库文档：
