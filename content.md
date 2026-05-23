@@ -131,7 +131,17 @@
 2. 新增 `.env.example`，记录本项目需要的环境变量模板。
 3. 更新 `README.md`，补充当前真实本地配置说明。
 
+## 2026-05-23 第六次迭代
+
+### 本次完成内容
+
+1. 根据用户提供的 DashScope 信息，配置 Embedding 独立 OpenAI 兼容端点：
+   - `AI_EMBEDDING_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1`
+   - `AI_EMBEDDING_MODEL=text-embedding-v4`
+2. Embedding API Key 改为读取环境变量 `DASHSCOPE_API_KEY`，不写入代码仓库。
+3. 更新 `.env.example`，增加 DashScope embedding 环境变量模板。
+4. 更新 `README.md`，说明 Chat 与 Embedding 分别使用 DeepSeek 和 DashScope。
+
 ### 待确认事项
 
-1. `text-embedding-v4` 对应的 OpenAI 兼容 base-url 和 API Key 是否与 DeepSeek Chat 相同。
-2. 当前 Redis 仅配置连接信息，项目向量库仍使用 InMemoryVectorStore。切换 Redis Stack VectorStore 需要后续单独接入依赖和配置。
+1. 当前 Redis 仅配置连接信息，项目向量库仍使用 InMemoryVectorStore。切换 Redis Stack VectorStore 需要后续单独接入依赖和配置。

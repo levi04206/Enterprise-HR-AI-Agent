@@ -29,6 +29,8 @@ CREATE DATABASE enterprise_hr_ai_agent DEFAULT CHARACTER SET utf8mb4 COLLATE utf
 $env:OPENAI_API_KEY="你的 OpenAI 兼容 API Key"
 $env:AI_BASE_URL="https://api.deepseek.com"
 $env:AI_CHAT_MODEL="deepseek-chat"
+$env:DASHSCOPE_API_KEY="你的 DashScope API Key"
+$env:AI_EMBEDDING_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
 $env:AI_EMBEDDING_MODEL="text-embedding-v4"
 ```
 
@@ -48,6 +50,12 @@ port: 6379
 ```
 
 说明：当前向量库仍使用 InMemoryVectorStore，Redis 配置先作为后续切换 Redis Stack VectorStore 的基础。
+
+5. 模型配置说明：
+
+- Chat 使用 DeepSeek OpenAI 兼容接口。
+- Embedding 使用 DashScope OpenAI 兼容模式。
+- 两个 API Key 分别从 `OPENAI_API_KEY` 和 `DASHSCOPE_API_KEY` 读取，避免把密钥写入代码。
 
 ## 本地快速启动
 
