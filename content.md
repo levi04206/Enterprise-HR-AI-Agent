@@ -244,3 +244,20 @@ RAG 入库现在不仅写入向量库，也能在关系型数据库中追踪文�
 ### 当前状态
 
 知识库模块已经从“只入库”升级为可追踪、可删除的管理闭环，为后续后台管理页和重复文档治理打好了基础。
+
+## 2026-05-23 第十二次迭代
+
+### 本次完成内容
+
+1. 接入 springdoc OpenAPI：
+   - `springdoc-openapi-starter-webflux-ui`
+   - 版本 `2.8.8`
+2. 新增 `OpenApiConfig`，配置 API 标题、描述、本地服务地址和 GitHub 外部文档地址。
+3. 在 `application.yml` 中配置：
+   - OpenAPI JSON：`/v3/api-docs`
+   - Swagger UI：`/swagger-ui.html`
+4. 更新 `README.md`，补充 Swagger UI 和 OpenAPI JSON 访问地址。
+
+### 当前状态
+
+应用启动后可以直接通过 Swagger UI 查看和调试接口，后续做真实 AI/RAG 联调和前端开发会更方便。

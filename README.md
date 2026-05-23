@@ -69,6 +69,20 @@ curl http://localhost:8080/api/v1/diagnostics/embedding
 
 这两个接口会真实调用模型服务。返回 `status=UP` 表示对应模型配置可用。
 
+## 接口文档
+
+启动应用后可以通过 Swagger UI 调试接口：
+
+```text
+http://localhost:8080/swagger-ui.html
+```
+
+OpenAPI JSON 地址：
+
+```text
+http://localhost:8080/v3/api-docs
+```
+
 ## 本地快速启动
 
 如果暂时没有 MySQL、Redis 或真实大模型 API，可以先用 `local` profile 跑通主体服务：
