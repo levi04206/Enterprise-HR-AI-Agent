@@ -156,6 +156,32 @@ $env:AI_VECTOR_STORE_TYPE="redis"
 
 但更推荐使用 `redis` profile，因为它会同时补齐 Redis VectorStore 的索引名、key 前缀和 Jedis 客户端配置。
 
+## 基础鉴权
+
+默认开发模式关闭鉴权，便于本地调试。启用 `secure` profile 后，业务 API 需要携带员工身份请求头：
+
+```powershell
+mvn spring-boot:run "-Dspring-boot.run.profiles=secure"
+```
+
+普通员工请求示例：
+
+```bash
+curl -H "X-HR-EMPLOYEE-NAME: 张三" http://localhost:8080/api/v1/employees
+```
+
+管理接口请求示例：
+
+```bash
+curl -H "X-HR-EMPLOYEE-NAME: 管理员" \
+  -H "X-HR-ROLE: ADMIN" \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"赵六\",\"department\":\"财务部\",\"email\":\"zhaoliu@example.com\",\"annualLeaveTotal\":10,\"annualLeaveUsed\":0}" \
+  http://localhost:8080/api/v1/employees
+```
+
+当前鉴权模式模拟企业网关/SSO 把员工身份写入请求头。后续接入真实 OAuth2/JWT 时，可以替换过滤器实现，业务接口不需要大改。
+
 ## 常用接口
 
 上传知识库文档：

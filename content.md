@@ -304,3 +304,27 @@ RAG 入库现在不仅写入向量库，也能在关系型数据库中追踪文�
 ### 当前状态
 
 项目现在支持两种向量库模式：默认内存向量库用于快速开发，`redis` profile 用于 Redis Stack 持久化向量存储。业务层仍只依赖 Spring AI `VectorStore` 接口。
+
+## 2026-05-23 第十五次迭代
+
+### 本次完成内容
+
+1. 新增轻量级企业网关鉴权过滤器：
+   - `LightweightSecurityWebFilter`
+2. 新增安全配置属性：
+   - `SecurityProperties`
+3. 新增 `application-secure.yml`，启用后要求业务 API 携带员工身份请求头：
+   - `X-HR-EMPLOYEE-NAME`
+4. 管理类写接口要求管理员角色：
+   - `X-HR-ROLE: ADMIN`
+5. 默认 profile 仍关闭鉴权，避免影响本地开发和 Swagger 调试。
+6. 新增 `SecurityWebFilterTest`，验证：
+   - 缺少员工头返回 401
+   - 普通员工可访问普通查询接口
+   - 普通员工访问管理写接口返回 403
+   - 管理员可访问管理写接口
+7. 更新 `README.md`，补充 secure profile 启动和请求头示例。
+
+### 当前状态
+
+项目已有基础身份边界。它模拟企业 SSO/网关向后端透传员工身份的模式，后续可以替换为 OAuth2/JWT，但业务 Controller 和 Service 不需要重写。

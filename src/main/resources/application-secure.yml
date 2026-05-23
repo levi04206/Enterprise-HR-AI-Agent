@@ -1,0 +1,10 @@
+app:
+  security:
+    enabled: true
+    employee-header: X-HR-EMPLOYEE-NAME
+    role-header: X-HR-ROLE
+    permit-all-prefixes:
+      - /actuator
+      - /swagger-ui
+      - /swagger-ui.html
+      - /v3/api-docs

@@ -76,3 +76,7 @@ app:
     # 每次带 sessionId 对话时，注入最近 N 条历史消息帮助模型理解上下文。
     # 历史消息只作为对话上下文，制度问题仍以 RAG 检索到的 Context 为准。
     history-size: 8
+  security:
+    # 默认开发模式关闭鉴权，避免影响本地接口调试。
+    # 启用 secure profile 后会要求业务 API 携带 X-HR-EMPLOYEE-NAME，请求管理接口还需要 X-HR-ROLE=ADMIN。
+    enabled: false
