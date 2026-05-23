@@ -112,8 +112,22 @@ curl http://localhost:8080/api/v1/knowledge/documents
 
 ```bash
 curl -N -H "Content-Type: application/json" \
-  -d "{\"message\":\"张三还剩多少年假？\"}" \
+  -d "{\"message\":\"张三还剩多少年假？\",\"sessionId\":1}" \
   http://localhost:8080/api/v1/chat/stream
+```
+
+创建对话会话：
+
+```bash
+curl -H "Content-Type: application/json" \
+  -d "{\"title\":\"年假咨询\"}" \
+  http://localhost:8080/api/v1/chat/sessions
+```
+
+查询会话消息：
+
+```bash
+curl http://localhost:8080/api/v1/chat/sessions/1/messages
 ```
 
 新增员工：

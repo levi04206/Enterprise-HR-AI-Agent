@@ -183,3 +183,26 @@
 ### 当前状态
 
 RAG 入库现在不仅写入向量库，也能在关系型数据库中追踪文档索引记录。后续可以在后台页面展示知识库文档列表，并支持重建索引、删除文档等扩展能力。
+
+## 2026-05-23 第九次迭代
+
+### 本次完成内容
+
+1. 新增对话会话与消息历史表：
+   - `chat_session`
+   - `chat_message`
+2. 新增实体、Mapper、DTO、Service 和 Controller。
+3. 新增会话管理接口：
+   - `POST /api/v1/chat/sessions`
+   - `GET /api/v1/chat/sessions`
+   - `GET /api/v1/chat/sessions/{sessionId}/messages`
+4. 扩展 `ChatRequest`，支持传入 `sessionId`。
+5. 改造 SSE 流式对话服务：
+   - 请求带 `sessionId` 时保存用户问题
+   - 模型流式输出完成后保存助手完整回复
+6. 重写 `ChatService` 和 `ChatRequest` 中显示异常的中文注释和提示文本。
+7. 更新 MySQL、local H2、test H2 建表脚本。
+
+### 当前状态
+
+后端已经具备对话会话概念。前端可以先创建会话，再用该 `sessionId` 调用流式聊天接口，最后查询历史消息用于展示聊天记录。

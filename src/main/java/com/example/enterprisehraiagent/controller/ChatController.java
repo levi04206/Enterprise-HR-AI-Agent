@@ -29,7 +29,7 @@ public class ChatController {
      */
     @PostMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> stream(@Valid @RequestBody ChatRequest request) {
-        return chatService.streamChat(request.message())
+        return chatService.streamChat(request.message(), request.sessionId())
                 .map(token -> ServerSentEvent.builder(token).event("message").build())
                 .concatWithValues(ServerSentEvent.builder("[DONE]").event("done").build())
                 .onErrorResume(error -> Flux.just(

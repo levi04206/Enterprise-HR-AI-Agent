@@ -16,28 +16,32 @@ import java.util.stream.IntStream;
  * 流式对话核心引擎。
  *
  * <p>这个服务把 RAG 和 Function Calling 组合成一个 HR Agent：
- * 1. 先用用户问题检索企业制度知识库；
- * 2. 把 TopK 片段作为 Context 注入 System Prompt；
- * 3. ChatClient 已经在 AiConfig 中注册 HR 工具；
- * 4. 模型判断需要个人数据时，会自动发起工具调用；
- * 5. stream().content() 将模型输出 token 流式返回。</p>
+ * 先检索知识库，把 TopK 制度片段注入 System Prompt，再让模型按需调用 HR 工具。
+ * 如果请求携带 sessionId，则同时保存用户问题和助手完整回复。</p>
  */
 @Service
 public class ChatService {
 
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
+    private final ChatHistoryService chatHistoryService;
     private final int topK;
 
     public ChatService(ChatClient hrChatClient,
                        VectorStore vectorStore,
+                       ChatHistoryService chatHistoryService,
                        @Value("${app.ai.top-k:3}") int topK) {
         this.chatClient = hrChatClient;
         this.vectorStore = vectorStore;
+        this.chatHistoryService = chatHistoryService;
         this.topK = topK;
     }
 
-    public Flux<String> streamChat(String userMessage) {
+    public Flux<String> streamChat(String userMessage, Long sessionId) {
+        if (sessionId != null) {
+            chatHistoryService.appendMessage(sessionId, "USER", userMessage);
+        }
+
         List<Document> relevantDocuments = vectorStore.similaritySearch(
                 SearchRequest.builder()
                         .query(userMessage)
@@ -47,15 +51,19 @@ public class ChatService {
 
         String context = buildContext(relevantDocuments);
         String systemPrompt = buildSystemPrompt(context);
+        StringBuilder assistantResponse = new StringBuilder();
 
         return chatClient.prompt()
-                // System Prompt 是智能体的稳定行为约束，也是 RAG Context 的注入点。
                 .system(systemPrompt)
-                // User Prompt 保留用户原始问题，避免把用户问题混进系统规则中。
                 .user(userMessage)
-                // AiConfig 中 defaultToolNames 已注册工具，所以这里无需再次 toolNames。
                 .stream()
-                .content();
+                .content()
+                .doOnNext(assistantResponse::append)
+                .doOnComplete(() -> {
+                    if (sessionId != null) {
+                        chatHistoryService.appendMessage(sessionId, "ASSISTANT", assistantResponse.toString());
+                    }
+                });
     }
 
     private String buildContext(List<Document> relevantDocuments) {

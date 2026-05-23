@@ -28,3 +28,21 @@ CREATE TABLE IF NOT EXISTS knowledge_document (
     created_at DATETIME NOT NULL,
     KEY idx_knowledge_document_created_at (created_at)
 );
+
+CREATE TABLE IF NOT EXISTS chat_session (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    KEY idx_chat_session_updated_at (updated_at)
+);
+
+CREATE TABLE IF NOT EXISTS chat_message (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    session_id BIGINT NOT NULL,
+    role VARCHAR(32) NOT NULL,
+    content TEXT NOT NULL,
+    created_at DATETIME NOT NULL,
+    KEY idx_chat_message_session_id (session_id),
+    CONSTRAINT fk_chat_message_session FOREIGN KEY (session_id) REFERENCES chat_session (id)
+);
