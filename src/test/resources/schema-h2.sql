@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS leave_record;
 DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS knowledge_document;
 
 CREATE TABLE employee (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -18,4 +19,15 @@ CREATE TABLE leave_record (
     end_date DATE NOT NULL,
     status VARCHAR(32) NOT NULL,
     KEY idx_leave_record_emp_id (emp_id)
+);
+
+CREATE TABLE knowledge_document (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    filename VARCHAR(255) NOT NULL,
+    content_type VARCHAR(128) NOT NULL,
+    raw_document_count INT NOT NULL DEFAULT 0,
+    chunk_count INT NOT NULL DEFAULT 0,
+    status VARCHAR(32) NOT NULL,
+    created_at DATETIME NOT NULL,
+    KEY idx_knowledge_document_created_at (created_at)
 );

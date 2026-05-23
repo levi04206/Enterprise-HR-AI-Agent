@@ -17,3 +17,14 @@ CREATE TABLE IF NOT EXISTS leave_record (
     KEY idx_leave_record_emp_id (emp_id),
     CONSTRAINT fk_leave_record_employee FOREIGN KEY (emp_id) REFERENCES employee (id)
 );
+
+CREATE TABLE IF NOT EXISTS knowledge_document (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    filename VARCHAR(255) NOT NULL,
+    content_type VARCHAR(128) NOT NULL,
+    raw_document_count INT NOT NULL DEFAULT 0,
+    chunk_count INT NOT NULL DEFAULT 0,
+    status VARCHAR(32) NOT NULL,
+    created_at DATETIME NOT NULL,
+    KEY idx_knowledge_document_created_at (created_at)
+);

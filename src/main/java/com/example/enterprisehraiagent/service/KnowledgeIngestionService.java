@@ -1,6 +1,8 @@
 package com.example.enterprisehraiagent.service;
 
 import com.example.enterprisehraiagent.dto.IngestResponse;
+import com.example.enterprisehraiagent.entity.KnowledgeDocument;
+import com.example.enterprisehraiagent.mapper.KnowledgeDocumentMapper;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
@@ -13,6 +15,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -25,17 +28,19 @@ import java.util.List;
 public class KnowledgeIngestionService {
 
     private final VectorStore vectorStore;
+    private final KnowledgeDocumentMapper knowledgeDocumentMapper;
     private final TokenTextSplitter tokenTextSplitter = new TokenTextSplitter();
 
-    public KnowledgeIngestionService(VectorStore vectorStore) {
+    public KnowledgeIngestionService(VectorStore vectorStore, KnowledgeDocumentMapper knowledgeDocumentMapper) {
         this.vectorStore = vectorStore;
+        this.knowledgeDocumentMapper = knowledgeDocumentMapper;
     }
 
     public Mono<IngestResponse> ingest(FilePart filePart) {
         return Mono.usingWhen(
                 createTempFile(filePart),
                 tempFile -> filePart.transferTo(tempFile)
-                        .then(Mono.fromCallable(() -> ingestBlocking(filePart.filename(), tempFile))
+                        .then(Mono.fromCallable(() -> ingestBlocking(filePart, tempFile))
                                 .subscribeOn(Schedulers.boundedElastic())),
                 tempFile -> Mono.fromRunnable(() -> deleteQuietly(tempFile))
         );
@@ -48,18 +53,31 @@ public class KnowledgeIngestionService {
         }).subscribeOn(Schedulers.boundedElastic());
     }
 
-    private IngestResponse ingestBlocking(String filename, Path tempFile) {
-        // TikaDocumentReader 可以读取 TXT/PDF/DOCX 等常见办公文档，适合企业知识库入口。
+    private IngestResponse ingestBlocking(FilePart filePart, Path tempFile) {
         TikaDocumentReader reader = new TikaDocumentReader(new FileSystemResource(tempFile));
         List<Document> rawDocuments = reader.get();
-
-        // TokenTextSplitter 会按模型 token 粒度切分，避免单段文本过长导致检索不准或上下文超限。
         List<Document> chunks = tokenTextSplitter.apply(rawDocuments);
 
-        // VectorStore.add 会调用 EmbeddingModel 将 chunk 转成向量，并写入当前配置的向量库。
         vectorStore.add(chunks);
 
-        return new IngestResponse(filename, rawDocuments.size(), chunks.size(), "知识库文档已入库");
+        KnowledgeDocument knowledgeDocument = new KnowledgeDocument();
+        knowledgeDocument.setFilename(filePart.filename());
+        knowledgeDocument.setContentType(filePart.headers().getContentType() == null
+                ? "application/octet-stream"
+                : filePart.headers().getContentType().toString());
+        knowledgeDocument.setRawDocumentCount(rawDocuments.size());
+        knowledgeDocument.setChunkCount(chunks.size());
+        knowledgeDocument.setStatus("INDEXED");
+        knowledgeDocument.setCreatedAt(LocalDateTime.now());
+        knowledgeDocumentMapper.insert(knowledgeDocument);
+
+        return new IngestResponse(
+                knowledgeDocument.getId(),
+                filePart.filename(),
+                rawDocuments.size(),
+                chunks.size(),
+                "知识库文档已入库"
+        );
     }
 
     private static String getSuffix(String filename) {

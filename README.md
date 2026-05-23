@@ -102,6 +102,12 @@ curl "http://localhost:8080/api/v1/employees?keyword=研发"
 curl -F "file=@2026员工考勤管理办法.txt" http://localhost:8080/api/v1/knowledge/ingest
 ```
 
+查询已入库知识库文档：
+
+```bash
+curl http://localhost:8080/api/v1/knowledge/documents
+```
+
 流式对话：
 
 ```bash

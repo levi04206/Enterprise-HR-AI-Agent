@@ -161,3 +161,25 @@
 ### 当前状态
 
 用户在 IDEA 中配置好 `OPENAI_API_KEY` 和 `DASHSCOPE_API_KEY` 后，可以先访问诊断接口判断 Chat 与 Embedding 是否可用，再继续做 RAG 上传和流式对话联调。
+
+## 2026-05-23 第八次迭代
+
+### 本次完成内容
+
+1. 新增知识库文档元数据表 `knowledge_document`。
+2. 新增实体和 Mapper：
+   - `KnowledgeDocument`
+   - `KnowledgeDocumentMapper`
+3. 新增 DTO 和服务：
+   - `KnowledgeDocumentResponse`
+   - `KnowledgeDocumentService`
+4. 改造 RAG 文档入库流程，文档成功写入 VectorStore 后同步记录元数据。
+5. 新增知识库文档查询接口：
+   - `GET /api/v1/knowledge/documents`
+   - `GET /api/v1/knowledge/documents/{id}`
+6. 更新 MySQL、local H2、test H2 建表脚本。
+7. 修复 `KnowledgeIngestionService` 中显示异常的中文注释。
+
+### 当前状态
+
+RAG 入库现在不仅写入向量库，也能在关系型数据库中追踪文档索引记录。后续可以在后台页面展示知识库文档列表，并支持重建索引、删除文档等扩展能力。
