@@ -63,6 +63,9 @@ management:
 app:
   ai:
     top-k: 3
+    # 每次带 sessionId 对话时，注入最近 N 条历史消息帮助模型理解上下文。
+    # 历史消息只作为对话上下文，制度问题仍以 RAG 检索到的 Context 为准。
+    history-size: 8
     # 当前仍使用内存向量库，方便先跑通主体功能。
     # 后续如果切换 Redis Stack VectorStore，再替换 VectorStoreConfig 和依赖。
     vector-store: in-memory

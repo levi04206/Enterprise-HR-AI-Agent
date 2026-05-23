@@ -59,6 +59,23 @@ public class ChatHistoryService {
                 .toList();
     }
 
+    public List<ChatMessage> listRecentMessages(Long sessionId, int limit) {
+        ensureSessionExists(sessionId);
+        if (limit <= 0) {
+            return List.of();
+        }
+
+        List<ChatMessage> messages = chatMessageMapper.selectList(
+                new LambdaQueryWrapper<ChatMessage>()
+                        .eq(ChatMessage::getSessionId, sessionId)
+                        .orderByDesc(ChatMessage::getCreatedAt)
+                        .orderByDesc(ChatMessage::getId)
+                        .last("LIMIT " + limit)
+        );
+
+        return messages.reversed();
+    }
+
     public void appendMessage(Long sessionId, String role, String content) {
         if (sessionId == null || !StringUtils.hasText(content)) {
             return;

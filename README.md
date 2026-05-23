@@ -8,6 +8,7 @@
 - `/api/v1/chat/stream` 提供 SSE 流式对话。
 - RAG 检索企业制度 Top 3 片段后注入 System Prompt。
 - Function Calling 工具支持查询员工联系方式和年假余额。
+- 带 `sessionId` 的对话会自动保存历史，并把最近 8 条消息注入模型上下文。
 
 ## 启动前准备
 
@@ -56,6 +57,7 @@ port: 6379
 - Chat 使用 DeepSeek OpenAI 兼容接口。
 - Embedding 使用 DashScope OpenAI 兼容模式。
 - 两个 API Key 分别从 `OPENAI_API_KEY` 和 `DASHSCOPE_API_KEY` 读取，避免把密钥写入代码。
+- `app.ai.history-size` 控制每次对话注入的最近历史消息条数，默认 8。
 
 模型诊断接口：
 
