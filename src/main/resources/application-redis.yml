@@ -1,0 +1,22 @@
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      # Spring AI RedisVectorStore 1.1.x 自动配置依赖 JedisConnectionFactory。
+      client-type: jedis
+
+  ai:
+    vectorstore:
+      type: redis
+      redis:
+        # 首次启动时自动创建 RediSearch 索引。生产环境可以改为 false，由迁移脚本统一管理。
+        initialize-schema: ${AI_REDIS_VECTOR_INITIALIZE_SCHEMA:true}
+        index-name: ${AI_REDIS_VECTOR_INDEX:enterprise_hr_ai_agent_idx}
+        prefix: ${AI_REDIS_VECTOR_PREFIX:enterprise_hr_ai_agent:doc:}
+
+app:
+  ai:
+    # redis profile 下向量数据会保存在 Redis Stack 中，应用重启后不会丢失。
+    vector-store: redis

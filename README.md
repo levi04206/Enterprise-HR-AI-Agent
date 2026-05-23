@@ -51,7 +51,7 @@ host: 127.0.0.1
 port: 6379
 ```
 
-说明：当前向量库仍使用 InMemoryVectorStore，Redis 配置先作为后续切换 Redis Stack VectorStore 的基础。
+说明：默认 profile 使用 InMemory VectorStore，便于没有 Redis Stack 时先跑通主体功能。启用 `redis` profile 后会切换到 Redis Stack VectorStore。
 
 5. 模型配置说明：
 
@@ -120,6 +120,41 @@ curl "http://localhost:8080/api/v1/employees?keyword=研发"
 ```
 
 该脚本会依次检查健康端点、Chat 模型、Embedding 模型，上传 `docs/samples/2026员工考勤管理办法.txt`，创建会话，并调用 SSE 对话接口验证 RAG 回答和消息落库。
+
+## Redis Stack VectorStore
+
+默认启动仍使用内存向量库：
+
+```powershell
+mvn spring-boot:run
+```
+
+如果要让知识库向量持久化到 Redis Stack，先确保本机 `127.0.0.1:6379` 是 Redis Stack，而不是普通 Redis。Redis Stack 需要包含 RediSearch 和 RedisJSON 模块。
+
+然后使用 `redis` profile 启动：
+
+```powershell
+mvn spring-boot:run "-Dspring-boot.run.profiles=redis"
+```
+
+可配置项：
+
+```powershell
+$env:REDIS_HOST="127.0.0.1"
+$env:REDIS_PORT="6379"
+$env:REDIS_PASSWORD=""
+$env:AI_REDIS_VECTOR_INDEX="enterprise_hr_ai_agent_idx"
+$env:AI_REDIS_VECTOR_PREFIX="enterprise_hr_ai_agent:doc:"
+$env:AI_REDIS_VECTOR_INITIALIZE_SCHEMA="true"
+```
+
+也可以不启用 profile，而是直接设置：
+
+```powershell
+$env:AI_VECTOR_STORE_TYPE="redis"
+```
+
+但更推荐使用 `redis` profile，因为它会同时补齐 Redis VectorStore 的索引名、key 前缀和 Jedis 客户端配置。
 
 ## 常用接口
 

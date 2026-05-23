@@ -73,6 +73,12 @@
             <artifactId>spring-ai-vector-store</artifactId>
         </dependency>
 
+        <!-- Redis Stack VectorStore。启用 redis profile 后，RAG 向量会持久化到 Redis Stack。 -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-vector-store-redis</artifactId>
+        </dependency>
+
         <!-- 使用 Apache Tika 读取 PDF/TXT/DOCX 等文档，再交给 TokenTextSplitter 分块。 -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
@@ -109,6 +115,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <!-- Jedis 传递引入 org.json，排除测试依赖中的旧 android-json，避免 JSONObject 重复类警告。 -->
+                <exclusion>
+                    <groupId>com.vaadin.external.google</groupId>
+                    <artifactId>android-json</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

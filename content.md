@@ -283,3 +283,24 @@ RAG 入库现在不仅写入向量库，也能在关系型数据库中追踪文�
 ### 当前状态
 
 当应用在 IDEA 中以默认 profile 启动，并且 DeepSeek 与 DashScope 环境变量配置正确后，可以直接运行脚本验证真实模型、RAG 入库、流式对话和会话落库的端到端链路。
+
+## 2026-05-23 第十四次迭代
+
+### 本次完成内容
+
+1. 接入 Spring AI Redis VectorStore Starter：
+   - `spring-ai-starter-vector-store-redis`
+2. 改造 `VectorStoreConfig`：
+   - 默认 `spring.ai.vectorstore.type=in-memory` 时创建 `SimpleVectorStore`
+   - 启用 `spring.ai.vectorstore.type=redis` 时交给 Spring AI 自动配置 `RedisVectorStore`
+3. 新增 `application-redis.yml`：
+   - 使用 Jedis 客户端
+   - 配置 Redis Stack 地址
+   - 配置 RediSearch 索引名和 key 前缀
+   - 默认自动初始化向量索引
+4. 更新默认、local、test 配置，确保未启用 redis profile 时仍使用内存向量库。
+5. 更新 `README.md`，补充 Redis Stack VectorStore 的启动方式和环境变量。
+
+### 当前状态
+
+项目现在支持两种向量库模式：默认内存向量库用于快速开发，`redis` profile 用于 Redis Stack 持久化向量存储。业务层仍只依赖 Spring AI `VectorStore` 接口。
