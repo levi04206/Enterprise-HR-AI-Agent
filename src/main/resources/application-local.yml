@@ -1,0 +1,49 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:enterprise_hr_ai_agent;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema-local.sql
+      data-locations: classpath:data-local.sql
+
+  ai:
+    openai:
+      # local profile 用于先跑通后端主体。调用真实 Chat/RAG 接口前请改为真实 API 配置。
+      api-key: ${AI_API_KEY:test-key}
+      base-url: ${AI_BASE_URL:http://localhost:9999}
+      chat:
+        options:
+          model: ${AI_CHAT_MODEL:test-chat-model}
+          temperature: 0.2
+      embedding:
+        options:
+          model: ${AI_EMBEDDING_MODEL:test-embedding-model}
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+app:
+  ai:
+    top-k: 3
+    vector-store: in-memory

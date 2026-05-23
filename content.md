@@ -90,3 +90,26 @@
 ### 当前状态
 
 项目已经具备基础自动化测试能力。后续即使暂时没有真实 MySQL、Redis 或大模型 API，也可以先用 `mvn test` 验证核心业务接口没有破坏。
+
+## 2026-05-22 第四次迭代
+
+### 本次完成内容
+
+1. 添加 Spring Boot Actuator，用于暴露健康检查和基础运行状态。
+2. 新增 `application-local.yml`，提供无需 MySQL/Redis/API Key 的本地启动 profile。
+3. 新增 local profile 专用初始化脚本：
+   - `schema-local.sql`
+   - `data-local.sql`
+4. 将 H2 依赖调整为 runtime，使本地 profile 可以直接启动应用。
+5. 添加 GitHub Actions CI：
+   - 每次 push 到 `master` 自动执行 `mvn test`
+   - Pull Request 也会自动执行测试
+6. 更新 `README.md`，补充本地快速启动、健康检查和 CI 说明。
+7. 添加 `scripts/smoke-local.ps1`，用于打包、启动 local profile、检查健康端点和员工样例接口。
+8. 已手动执行本地 smoke test：
+   - `/actuator/health` 返回 HTTP 200
+   - `/api/v1/employees?keyword=研发` 返回样例员工数据
+
+### 当前状态
+
+项目现在可以通过 `mvn spring-boot:run "-Dspring-boot.run.profiles=local"` 或 `.\scripts\smoke-local.ps1` 在无外部中间件的情况下启动主体服务，并通过 `/actuator/health` 和普通 HR REST 接口做 smoke test。

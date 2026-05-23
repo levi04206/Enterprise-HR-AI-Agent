@@ -33,6 +33,34 @@ $env:AI_CHAT_MODEL="deepseek-chat"
 
 3. 修改 `src/main/resources/application.yml` 中的 MySQL 用户名和密码。
 
+## 本地快速启动
+
+如果暂时没有 MySQL、Redis 或真实大模型 API，可以先用 `local` profile 跑通主体服务：
+
+```powershell
+mvn spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
+健康检查：
+
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+查询本地样例员工：
+
+```bash
+curl "http://localhost:8080/api/v1/employees?keyword=研发"
+```
+
+一键 smoke test：
+
+```powershell
+.\scripts\smoke-local.ps1
+```
+
+说明：`local` profile 的 Chat/RAG 真实调用仍需要可用的大模型和 Embedding API。它的用途是先验证后端主体服务、数据库映射和普通 REST 接口。
+
 ## 常用接口
 
 上传知识库文档：
@@ -78,6 +106,8 @@ curl -H "Content-Type: application/json" \
 ```powershell
 mvn test
 ```
+
+仓库已配置 GitHub Actions CI，每次推送到 `master` 会自动执行 `mvn test`。
 
 打包：
 
