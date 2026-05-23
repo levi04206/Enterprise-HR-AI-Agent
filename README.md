@@ -26,12 +26,28 @@ CREATE DATABASE enterprise_hr_ai_agent DEFAULT CHARACTER SET utf8mb4 COLLATE utf
 2. 配置环境变量：
 
 ```powershell
-$env:AI_API_KEY="你的 OpenAI 兼容 API Key"
+$env:OPENAI_API_KEY="你的 OpenAI 兼容 API Key"
 $env:AI_BASE_URL="https://api.deepseek.com"
 $env:AI_CHAT_MODEL="deepseek-chat"
+$env:AI_EMBEDDING_MODEL="text-embedding-v4"
 ```
 
-3. 修改 `src/main/resources/application.yml` 中的 MySQL 用户名和密码。
+3. 默认 MySQL 配置已经按当前项目设置：
+
+```yaml
+url: jdbc:mysql://localhost:3306/enterprise_hr_ai_agent
+username: root
+password: '0206'
+```
+
+4. Redis 默认配置：
+
+```yaml
+host: 127.0.0.1
+port: 6379
+```
+
+说明：当前向量库仍使用 InMemoryVectorStore，Redis 配置先作为后续切换 Redis Stack VectorStore 的基础。
 
 ## 本地快速启动
 

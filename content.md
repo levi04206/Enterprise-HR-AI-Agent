@@ -113,3 +113,25 @@
 ### 当前状态
 
 项目现在可以通过 `mvn spring-boot:run "-Dspring-boot.run.profiles=local"` 或 `.\scripts\smoke-local.ps1` 在无外部中间件的情况下启动主体服务，并通过 `/actuator/health` 和普通 HR REST 接口做 smoke test。
+
+## 2026-05-23 第五次迭代
+
+### 本次完成内容
+
+1. 根据用户提供的信息更新主配置 `application.yml`：
+   - DeepSeek Chat base-url：`https://api.deepseek.com`
+   - Chat 模型：`deepseek-chat`
+   - temperature：`0.5`
+   - API Key 改为读取环境变量 `OPENAI_API_KEY`
+   - MySQL 地址改为 `localhost:3306/enterprise_hr_ai_agent`
+   - MySQL 用户名：`root`
+   - MySQL 密码：`0206`
+   - Redis 地址：`127.0.0.1:6379`
+   - Embedding 模型名：`text-embedding-v4`
+2. 新增 `.env.example`，记录本项目需要的环境变量模板。
+3. 更新 `README.md`，补充当前真实本地配置说明。
+
+### 待确认事项
+
+1. `text-embedding-v4` 对应的 OpenAI 兼容 base-url 和 API Key 是否与 DeepSeek Chat 相同。
+2. 当前 Redis 仅配置连接信息，项目向量库仍使用 InMemoryVectorStore。切换 Redis Stack VectorStore 需要后续单独接入依赖和配置。
