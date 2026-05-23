@@ -57,6 +57,15 @@ port: 6379
 - Embedding 使用 DashScope OpenAI 兼容模式。
 - 两个 API Key 分别从 `OPENAI_API_KEY` 和 `DASHSCOPE_API_KEY` 读取，避免把密钥写入代码。
 
+模型诊断接口：
+
+```bash
+curl http://localhost:8080/api/v1/diagnostics/chat
+curl http://localhost:8080/api/v1/diagnostics/embedding
+```
+
+这两个接口会真实调用模型服务。返回 `status=UP` 表示对应模型配置可用。
+
 ## 本地快速启动
 
 如果暂时没有 MySQL、Redis 或真实大模型 API，可以先用 `local` profile 跑通主体服务：

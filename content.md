@@ -145,3 +145,19 @@
 ### 待确认事项
 
 1. 当前 Redis 仅配置连接信息，项目向量库仍使用 InMemoryVectorStore。切换 Redis Stack VectorStore 需要后续单独接入依赖和配置。
+
+## 2026-05-23 第七次迭代
+
+### 本次完成内容
+
+1. 新增 AI 配置诊断模块：
+   - `GET /api/v1/diagnostics/chat`
+   - `GET /api/v1/diagnostics/embedding`
+2. 新增 `AiDiagnosticsService`，分别对 DeepSeek Chat 和 DashScope Embedding 发起最小真实调用。
+3. 新增 `AiDiagnosticResponse`，统一返回 provider、status、message 和 embedding 维度。
+4. 诊断接口不会输出 API Key，并对常见认证字段做脱敏处理。
+5. 更新 `README.md`，增加模型诊断接口说明。
+
+### 当前状态
+
+用户在 IDEA 中配置好 `OPENAI_API_KEY` 和 `DASHSCOPE_API_KEY` 后，可以先访问诊断接口判断 Chat 与 Embedding 是否可用，再继续做 RAG 上传和流式对话联调。
