@@ -29,6 +29,17 @@ CREATE TABLE IF NOT EXISTS knowledge_document (
     KEY idx_knowledge_document_created_at (created_at)
 );
 
+CREATE TABLE IF NOT EXISTS knowledge_chunk (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    document_id BIGINT NOT NULL,
+    vector_id VARCHAR(128) NOT NULL,
+    chunk_index INT NOT NULL,
+    created_at DATETIME NOT NULL,
+    UNIQUE KEY uk_knowledge_chunk_vector_id (vector_id),
+    KEY idx_knowledge_chunk_document_id (document_id),
+    CONSTRAINT fk_knowledge_chunk_document FOREIGN KEY (document_id) REFERENCES knowledge_document (id)
+);
+
 CREATE TABLE IF NOT EXISTS chat_session (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,

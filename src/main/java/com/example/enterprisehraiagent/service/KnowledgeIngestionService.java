@@ -1,7 +1,9 @@
 package com.example.enterprisehraiagent.service;
 
 import com.example.enterprisehraiagent.dto.IngestResponse;
+import com.example.enterprisehraiagent.entity.KnowledgeChunk;
 import com.example.enterprisehraiagent.entity.KnowledgeDocument;
+import com.example.enterprisehraiagent.mapper.KnowledgeChunkMapper;
 import com.example.enterprisehraiagent.mapper.KnowledgeDocumentMapper;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
@@ -15,8 +17,11 @@ import reactor.core.scheduler.Schedulers;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * 企业知识库构建服务。
@@ -29,11 +34,15 @@ public class KnowledgeIngestionService {
 
     private final VectorStore vectorStore;
     private final KnowledgeDocumentMapper knowledgeDocumentMapper;
+    private final KnowledgeChunkMapper knowledgeChunkMapper;
     private final TokenTextSplitter tokenTextSplitter = new TokenTextSplitter();
 
-    public KnowledgeIngestionService(VectorStore vectorStore, KnowledgeDocumentMapper knowledgeDocumentMapper) {
+    public KnowledgeIngestionService(VectorStore vectorStore,
+                                     KnowledgeDocumentMapper knowledgeDocumentMapper,
+                                     KnowledgeChunkMapper knowledgeChunkMapper) {
         this.vectorStore = vectorStore;
         this.knowledgeDocumentMapper = knowledgeDocumentMapper;
+        this.knowledgeChunkMapper = knowledgeChunkMapper;
     }
 
     public Mono<IngestResponse> ingest(FilePart filePart) {
@@ -56,9 +65,7 @@ public class KnowledgeIngestionService {
     private IngestResponse ingestBlocking(FilePart filePart, Path tempFile) {
         TikaDocumentReader reader = new TikaDocumentReader(new FileSystemResource(tempFile));
         List<Document> rawDocuments = reader.get();
-        List<Document> chunks = tokenTextSplitter.apply(rawDocuments);
-
-        vectorStore.add(chunks);
+        List<Document> splitChunks = tokenTextSplitter.apply(rawDocuments);
 
         KnowledgeDocument knowledgeDocument = new KnowledgeDocument();
         knowledgeDocument.setFilename(filePart.filename());
@@ -66,18 +73,56 @@ public class KnowledgeIngestionService {
                 ? "application/octet-stream"
                 : filePart.headers().getContentType().toString());
         knowledgeDocument.setRawDocumentCount(rawDocuments.size());
-        knowledgeDocument.setChunkCount(chunks.size());
-        knowledgeDocument.setStatus("INDEXED");
+        knowledgeDocument.setChunkCount(splitChunks.size());
+        knowledgeDocument.setStatus("INDEXING");
         knowledgeDocument.setCreatedAt(LocalDateTime.now());
         knowledgeDocumentMapper.insert(knowledgeDocument);
+
+        try {
+            List<Document> chunks = attachBusinessMetadata(splitChunks, knowledgeDocument);
+            vectorStore.add(chunks);
+            saveChunkIndex(knowledgeDocument.getId(), chunks);
+
+            knowledgeDocument.setStatus("INDEXED");
+            knowledgeDocumentMapper.updateById(knowledgeDocument);
+        } catch (Exception ex) {
+            knowledgeDocument.setStatus("FAILED");
+            knowledgeDocumentMapper.updateById(knowledgeDocument);
+            throw ex;
+        }
 
         return new IngestResponse(
                 knowledgeDocument.getId(),
                 filePart.filename(),
                 rawDocuments.size(),
-                chunks.size(),
+                splitChunks.size(),
                 "知识库文档已入库"
         );
+    }
+
+    private List<Document> attachBusinessMetadata(List<Document> chunks, KnowledgeDocument knowledgeDocument) {
+        return IntStream.range(0, chunks.size())
+                .mapToObj(index -> {
+                    Document chunk = chunks.get(index);
+                    Map<String, Object> metadata = new HashMap<>(chunk.getMetadata());
+                    metadata.put("knowledgeDocumentId", knowledgeDocument.getId());
+                    metadata.put("filename", knowledgeDocument.getFilename());
+                    metadata.put("chunkIndex", index);
+                    return new Document(chunk.getId(), chunk.getText(), metadata);
+                })
+                .toList();
+    }
+
+    private void saveChunkIndex(Long documentId, List<Document> chunks) {
+        LocalDateTime now = LocalDateTime.now();
+        for (int i = 0; i < chunks.size(); i++) {
+            KnowledgeChunk knowledgeChunk = new KnowledgeChunk();
+            knowledgeChunk.setDocumentId(documentId);
+            knowledgeChunk.setVectorId(chunks.get(i).getId());
+            knowledgeChunk.setChunkIndex(i);
+            knowledgeChunk.setCreatedAt(now);
+            knowledgeChunkMapper.insert(knowledgeChunk);
+        }
     }
 
     private static String getSuffix(String filename) {

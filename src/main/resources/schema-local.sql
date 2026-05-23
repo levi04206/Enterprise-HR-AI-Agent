@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS leave_record;
 DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS knowledge_chunk;
 DROP TABLE IF EXISTS knowledge_document;
 DROP TABLE IF EXISTS chat_message;
 DROP TABLE IF EXISTS chat_session;
@@ -32,6 +33,16 @@ CREATE TABLE knowledge_document (
     status VARCHAR(32) NOT NULL,
     created_at DATETIME NOT NULL,
     KEY idx_knowledge_document_created_at (created_at)
+);
+
+CREATE TABLE knowledge_chunk (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    document_id BIGINT NOT NULL,
+    vector_id VARCHAR(128) NOT NULL,
+    chunk_index INT NOT NULL,
+    created_at DATETIME NOT NULL,
+    UNIQUE KEY uk_knowledge_chunk_vector_id (vector_id),
+    KEY idx_knowledge_chunk_document_id (document_id)
 );
 
 CREATE TABLE chat_session (

@@ -5,6 +5,7 @@
 ## 核心能力
 
 - 上传企业制度 PDF/TXT 文档，完成读取、分块、Embedding 和向量入库。
+- 记录知识库文档和向量 chunk 索引，支持按文档删除向量。
 - `/api/v1/chat/stream` 提供 SSE 流式对话。
 - RAG 检索企业制度 Top 3 片段后注入 System Prompt。
 - Function Calling 工具支持查询员工联系方式和年假余额。
@@ -108,6 +109,12 @@ curl -F "file=@2026员工考勤管理办法.txt" http://localhost:8080/api/v1/kn
 
 ```bash
 curl http://localhost:8080/api/v1/knowledge/documents
+```
+
+删除知识库文档及其向量索引：
+
+```bash
+curl -X DELETE http://localhost:8080/api/v1/knowledge/documents/1
 ```
 
 流式对话：

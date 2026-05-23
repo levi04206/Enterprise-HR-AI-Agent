@@ -221,3 +221,26 @@ RAG 入库现在不仅写入向量库，也能在关系型数据库中追踪文�
 ### 当前状态
 
 聊天模块现在不仅能保存历史，还能在后续追问中利用最近对话内容，支持更自然的连续 HR 咨询。
+
+## 2026-05-23 第十一次迭代
+
+### 本次完成内容
+
+1. 新增知识库 chunk 索引表 `knowledge_chunk`，记录业务文档和 VectorStore 向量 ID 的关系。
+2. 新增实体和 Mapper：
+   - `KnowledgeChunk`
+   - `KnowledgeChunkMapper`
+3. 改造 RAG 入库流程：
+   - 先创建 `knowledge_document` 记录并标记为 `INDEXING`
+   - 给每个 chunk 注入 `knowledgeDocumentId`、`filename`、`chunkIndex` 元数据
+   - 向量写入成功后保存 chunk 索引并把文档状态改为 `INDEXED`
+   - 入库异常时把文档状态标记为 `FAILED`
+4. 新增知识库删除接口：
+   - `DELETE /api/v1/knowledge/documents/{id}`
+5. 删除文档时会按 `knowledge_chunk.vector_id` 从 VectorStore 移除对应向量，并把文档状态标记为 `DELETED`。
+6. 更新 MySQL、local H2、test H2 建表脚本。
+7. 新增控制器测试，验证删除文档会返回 `DELETED` 状态。
+
+### 当前状态
+
+知识库模块已经从“只入库”升级为可追踪、可删除的管理闭环，为后续后台管理页和重复文档治理打好了基础。
