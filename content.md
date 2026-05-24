@@ -403,3 +403,27 @@ RAG 入库现在不仅写入向量库，也能在关系型数据库中追踪文�
 ### 当前状态
 
 项目现在不仅具备后端接口和 AI/RAG 能力，也具备可直接展示的浏览器演示页面，适合用于简历项目演示和 Java 后端实习面试讲解。
+## 2026-05-24 第二十次迭代
+
+### 本次完成内容
+
+1. 新增 RAG 检索日志表 `rag_search_log`，记录用户问题命中的知识库引用来源。
+2. 新增工具调用审计表 `tool_call_log`，记录 Function Calling 工具名、入参、结果、耗时和成功状态。
+3. 新增实体、Mapper、DTO 和服务：
+   - `RagSearchLog`
+   - `ToolCallLog`
+   - `RagSearchLogService`
+   - `ToolCallLogService`
+4. 改造 `ChatService`，每次向量检索后保存 TopK 命中文档片段。
+5. 改造 `HrToolsConfig`，每次 HR 工具执行时写入审计日志。
+6. 新增可观测接口：
+   - `GET /api/v1/observability/rag-search-logs`
+   - `GET /api/v1/observability/tool-call-logs`
+7. 新增 Flyway 迁移脚本 `V3__add_ai_observability_logs.sql`，并同步 H2/local/schema SQL。
+8. 演示控制台新增 RAG 引用和工具审计展示区。
+9. 新增 `ObservabilityControllerTest`，验证日志查询接口。
+10. 更新 README 和面试指南，补充可解释性和审计能力说明。
+
+### 当前状态
+
+项目现在可以回答“模型依据了哪些制度片段”和“模型调用了哪些内部工具”这两个面试关键问题，AI Agent 的可解释性和企业级审计能力更完整。

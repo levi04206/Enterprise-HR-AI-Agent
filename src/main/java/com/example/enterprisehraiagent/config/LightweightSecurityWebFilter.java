@@ -68,6 +68,9 @@ public class LightweightSecurityWebFilter implements WebFilter {
         if (path.startsWith("/api/v1/diagnostics")) {
             return true;
         }
+        if (path.startsWith("/api/v1/observability")) {
+            return true;
+        }
         if (path.startsWith("/api/v1/knowledge")) {
             return method == HttpMethod.POST || method == HttpMethod.DELETE;
         }

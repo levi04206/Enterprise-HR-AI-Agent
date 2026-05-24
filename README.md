@@ -312,3 +312,17 @@ http://localhost:8080/
 ```text
 docs/INTERVIEW_GUIDE.md
 ```
+
+## AI 可观测性
+
+项目已记录两类 AI Agent 可观测数据：
+
+- RAG 引用来源：`rag_search_log` 会记录每次问题命中的文档名、chunk 编号、向量 ID、相似度分数和内容摘要。
+- 工具调用审计：`tool_call_log` 会记录 Function Calling 工具名、结构化入参、返回结果、耗时、成功状态和错误信息。
+
+查询示例：
+
+```bash
+curl "http://localhost:8080/api/v1/observability/rag-search-logs?sessionId=1&limit=10"
+curl "http://localhost:8080/api/v1/observability/tool-call-logs?limit=10"
+```

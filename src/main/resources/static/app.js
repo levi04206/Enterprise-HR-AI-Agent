@@ -23,6 +23,10 @@ const elements = {
     refreshEmployeesButton: document.querySelector("#refreshEmployeesButton"),
     diagnosticsButton: document.querySelector("#diagnosticsButton"),
     diagnosticsResult: document.querySelector("#diagnosticsResult"),
+    refreshRagLogsButton: document.querySelector("#refreshRagLogsButton"),
+    ragLogList: document.querySelector("#ragLogList"),
+    refreshToolLogsButton: document.querySelector("#refreshToolLogsButton"),
+    toolLogList: document.querySelector("#toolLogList"),
     toast: document.querySelector("#toast")
 };
 
@@ -195,6 +199,10 @@ async function sendMessage(event) {
             elements.messages.scrollTop = elements.messages.scrollHeight;
         });
         await loadSessions();
+        await Promise.all([
+            loadRagLogs().catch(error => showToast(error.message)),
+            loadToolLogs().catch(error => showToast(error.message))
+        ]);
     } catch (error) {
         assistantNode.textContent = `对话失败：${error.message}`;
     } finally {
@@ -202,6 +210,45 @@ async function sendMessage(event) {
         elements.sendButton.disabled = false;
         elements.sendButton.textContent = "发送";
     }
+}
+
+async function loadRagLogs() {
+    const sessionQuery = state.sessionId ? `?sessionId=${state.sessionId}&limit=10` : "?limit=10";
+    const logs = await api(`/api/v1/observability/rag-search-logs${sessionQuery}`);
+    elements.ragLogList.innerHTML = "";
+    if (!logs.length) {
+        setEmpty(elements.ragLogList, "暂无 RAG 引用记录");
+        return;
+    }
+    logs.forEach(log => {
+        const node = document.createElement("div");
+        node.className = "audit-item";
+        node.innerHTML = `
+            <div class="item-title">#${log.rankNo} ${log.filename || "未知文档"}</div>
+            <div class="meta">chunk ${log.chunkIndex ?? "-"} · ${formatDate(log.createdAt)}</div>
+            <div class="audit-snippet">${log.contentPreview || ""}</div>
+        `;
+        elements.ragLogList.appendChild(node);
+    });
+}
+
+async function loadToolLogs() {
+    const logs = await api("/api/v1/observability/tool-call-logs?limit=10");
+    elements.toolLogList.innerHTML = "";
+    if (!logs.length) {
+        setEmpty(elements.toolLogList, "暂无工具调用记录");
+        return;
+    }
+    logs.forEach(log => {
+        const node = document.createElement("div");
+        node.className = "audit-item";
+        node.innerHTML = `
+            <div class="item-title">${log.toolName}</div>
+            <div class="meta">${log.success ? "成功" : "失败"} · ${log.durationMs}ms · ${formatDate(log.createdAt)}</div>
+            <div class="audit-snippet">${log.argumentsJson || ""}</div>
+        `;
+        elements.toolLogList.appendChild(node);
+    });
 }
 
 async function readEventStream(response, onData) {
@@ -309,6 +356,8 @@ function bindEvents() {
     elements.uploadForm.addEventListener("submit", event => uploadDocument(event).catch(error => showToast(error.message)));
     elements.refreshDocumentsButton.addEventListener("click", () => loadDocuments().catch(error => showToast(error.message)));
     elements.refreshEmployeesButton.addEventListener("click", () => loadEmployees().catch(error => showToast(error.message)));
+    elements.refreshRagLogsButton.addEventListener("click", () => loadRagLogs().catch(error => showToast(error.message)));
+    elements.refreshToolLogsButton.addEventListener("click", () => loadToolLogs().catch(error => showToast(error.message)));
     elements.employeeKeyword.addEventListener("keydown", event => {
         if (event.key === "Enter") {
             loadEmployees().catch(error => showToast(error.message));
@@ -323,7 +372,9 @@ async function bootstrap() {
     await Promise.all([
         loadSessions().catch(error => showToast(error.message)),
         loadDocuments().catch(error => showToast(error.message)),
-        loadEmployees().catch(error => showToast(error.message))
+        loadEmployees().catch(error => showToast(error.message)),
+        loadRagLogs().catch(error => showToast(error.message)),
+        loadToolLogs().catch(error => showToast(error.message))
     ]);
 }
 

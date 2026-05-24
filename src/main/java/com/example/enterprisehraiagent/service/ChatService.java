@@ -28,17 +28,20 @@ public class ChatService {
     private final ChatClient chatClient;
     private final VectorStore vectorStore;
     private final ChatHistoryService chatHistoryService;
+    private final RagSearchLogService ragSearchLogService;
     private final int topK;
     private final int historySize;
 
     public ChatService(ChatClient hrChatClient,
                        VectorStore vectorStore,
                        ChatHistoryService chatHistoryService,
+                       RagSearchLogService ragSearchLogService,
                        @Value("${app.ai.top-k:3}") int topK,
                        @Value("${app.ai.history-size:8}") int historySize) {
         this.chatClient = hrChatClient;
         this.vectorStore = vectorStore;
         this.chatHistoryService = chatHistoryService;
+        this.ragSearchLogService = ragSearchLogService;
         this.topK = topK;
         this.historySize = historySize;
     }
@@ -58,6 +61,7 @@ public class ChatService {
                         .topK(topK)
                         .build()
         );
+        ragSearchLogService.saveSearchLogs(sessionId, userMessage, relevantDocuments);
 
         String context = buildContext(relevantDocuments);
         String conversationHistory = buildConversationHistory(recentMessages);

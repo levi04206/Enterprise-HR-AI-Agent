@@ -22,6 +22,7 @@ Enterprise HR AI Agent 是一个面向企业员工的 HR 智能助理后端项�
 3. 实现基于 WebFlux 的 SSE 流式对话接口，提升大模型回答的实时反馈体验。
 4. 设计员工、请假、知识库文档、知识库 chunk、对话会话、对话消息等业务表，并使用 Flyway 管理数据库迁移。
 5. 补充 Swagger、统一异常响应、轻量级鉴权、CORS、H2 测试环境、Smoke Test 和 GitHub Actions CI。
+6. 增加 RAG 引用来源和 Function Calling 工具调用审计，支持追踪模型回答依据和内部工具调用过程。
 
 ## 面试讲解主线
 
@@ -38,6 +39,7 @@ Enterprise HR AI Agent 是一个面向企业员工的 HR 智能助理后端项�
 5. ChatClient 发起流式调用，并启用 HR 工具函数。
 6. SSE 持续返回模型 token。
 7. 回答结束后保存完整助手消息。
+8. 保存 RAG 检索日志和工具调用日志，用于排查模型回答依据和审计内部系统访问。
 
 ### 2. RAG 在项目里的作用
 
@@ -55,6 +57,8 @@ RAG 解决的是“公司制度不能只靠模型记忆”的问题。公司考�
 用户问题 -> SimilaritySearch Top K -> 拼接 Context -> System Prompt -> ChatClient
 ```
 
+项目还会把每次检索命中的片段写入 `rag_search_log`，包括会话 ID、用户问题、排名、文档 ID、文件名、chunk 编号、向量 ID、相似度分数和内容摘要。这样面试时可以强调：RAG 不只是把上下文塞给模型，还能追踪回答依据。
+
 ### 3. Function Calling 在项目里的作用
 
 Function Calling 解决的是“个人业务数据必须查内部系统”的问题。比如年假余额、同事邮箱不应该由模型编造，而应该调用后端工具方法查询数据库。
@@ -65,6 +69,8 @@ Function Calling 解决的是“个人业务数据必须查内部系统”的问
 2. `getLeaveBalanceTool`：输入员工姓名，返回剩余年假和最近审批中的请假记录。
 
 面试表达重点：模型负责理解意图和组织语言，业务系统负责提供确定性数据。
+
+每次工具调用都会写入 `tool_call_log`，记录工具名、结构化入参、返回结果、是否成功、错误信息和耗时。这个设计可以用来说明 Agent 访问内部系统必须可审计，不能只关注回答结果。
 
 ### 4. 为什么使用 SSE
 
@@ -88,6 +94,8 @@ Accept: text/event-stream
 4. `knowledge_chunk`：文档 chunk 与向量 ID 的关系。
 5. `chat_session`：对话会话。
 6. `chat_message`：会话消息。
+7. `rag_search_log`：RAG 检索引用来源。
+8. `tool_call_log`：Function Calling 工具调用审计。
 
 设计思路：
 
@@ -114,6 +122,10 @@ MySQL 管业务数据、文档元数据、会话历史；VectorStore 管文本�
 ### Q5：怎么保证项目可测试？
 
 项目提供 H2 test profile，不依赖本地 MySQL、Redis 和真实模型 API；控制器和服务层有集成测试；GitHub Actions 每次 push 自动运行 `mvn test`。
+
+### Q6：如何排查模型回答是否可信？
+
+可以查 `rag_search_log` 看本次问题命中了哪些制度片段，也可以查 `tool_call_log` 看模型是否调用了 HR 工具、入参是什么、工具返回了什么。这样回答依据和内部系统访问过程都可以追踪。
 
 ## 演示流程
 
@@ -146,6 +158,8 @@ http://localhost:8080/
 ```text
 公司的迟到规则是什么？
 ```
+
+8. 在演示控制台右侧查看 RAG 引用和工具审计，说明模型回答依据和 Function Calling 调用过程。
 
 ## 后续可扩展点
 
