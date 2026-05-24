@@ -92,6 +92,17 @@
             <version>${mybatis-plus.version}</version>
         </dependency>
 
+        <!-- 数据库版本化迁移。默认 MySQL 环境使用 Flyway 管理表结构和样例数据。 -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>

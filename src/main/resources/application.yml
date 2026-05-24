@@ -21,10 +21,14 @@ spring:
 
   sql:
     init:
-      # Demo 阶段自动执行 schema.sql/data.sql，方便首次启动建表和导入样例数据。
-      # 生产环境建议改为 never，并使用 Flyway/Liquibase 管理数据库变更。
-      mode: always
-      continue-on-error: true
+      # 默认 MySQL 环境交给 Flyway 管理版本化迁移，避免 schema.sql 每次启动重复执行。
+      mode: never
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
 
   ai:
     vectorstore:

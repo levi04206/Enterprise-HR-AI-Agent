@@ -328,3 +328,21 @@ RAG 入库现在不仅写入向量库，也能在关系型数据库中追踪文�
 ### 当前状态
 
 项目已有基础身份边界。它模拟企业 SSO/网关向后端透传员工身份的模式，后续可以替换为 OAuth2/JWT，但业务 Controller 和 Service 不需要重写。
+
+## 2026-05-24 第十六次迭代
+
+### 本次完成内容
+
+1. 接入 Flyway 数据库迁移：
+   - `flyway-core`
+   - `flyway-mysql`
+2. 默认 MySQL 环境关闭 `schema.sql/data.sql` 自动初始化，改由 Flyway 管理版本化迁移。
+3. 新增迁移脚本：
+   - `V1__init_schema.sql`：创建业务表
+   - `V2__seed_demo_data.sql`：导入样例员工和请假记录
+4. `local` 和 `test` profile 继续关闭 Flyway，沿用 H2 初始化脚本，保证本地快速启动和 CI 测试稳定。
+5. 更新 `README.md`，补充 Flyway 迁移说明。
+
+### 当前状态
+
+默认 MySQL 环境具备版本化数据库迁移能力。后续表结构变更应新增迁移脚本，而不是直接改历史 SQL。

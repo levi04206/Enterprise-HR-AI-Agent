@@ -44,6 +44,8 @@ username: root
 password: '0206'
 ```
 
+默认 MySQL 环境使用 Flyway 自动执行 `src/main/resources/db/migration` 下的版本化迁移脚本。首次启动会创建业务表并导入样例员工数据；后续表结构变化应新增 `V{版本号}__说明.sql`，不要直接改已经发布的迁移脚本。
+
 4. Redis 默认配置：
 
 ```yaml

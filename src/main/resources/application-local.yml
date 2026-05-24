@@ -14,6 +14,9 @@ spring:
       schema-locations: classpath:schema-local.sql
       data-locations: classpath:data-local.sql
 
+  flyway:
+    enabled: false
+
   ai:
     vectorstore:
       type: in-memory
