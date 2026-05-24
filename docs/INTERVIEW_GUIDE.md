@@ -168,3 +168,4 @@ http://localhost:8080/
 3. 增加向量检索命中分数展示和低置信度兜底。
 4. 增加前端登录态、会话删除、文档删除按钮。
 5. 增加真实企业系统 API Mock Server，展示 Function Calling 调用外部系统。
+> 建议先读 [ARCHITECTURE.md](ARCHITECTURE.md)，再按本文准备面试表达。架构文档负责讲系统怎么设计，本文负责讲简历怎么写、面试怎么说。

@@ -326,3 +326,61 @@ docs/INTERVIEW_GUIDE.md
 curl "http://localhost:8080/api/v1/observability/rag-search-logs?sessionId=1&limit=10"
 curl "http://localhost:8080/api/v1/observability/tool-call-logs?limit=10"
 ```
+## 项目展示入口
+
+Enterprise HR AI Agent 是一个基于 Spring Boot 3 和 Spring AI 的企业 HR 智能助理项目。它为员工提供统一对话窗口：制度类问题通过 RAG 检索企业知识库回答，个人数据类问题通过 Function Calling 调用 HR 工具查询员工、年假和请假数据。
+
+### 项目亮点
+
+- **Spring AI Agent 编排**：`ChatService` 组合 RAG、历史消息、System Prompt、Function Calling 和 SSE 流式输出。
+- **RAG 企业知识库**：支持 PDF/TXT 上传、文档读取、Token 分块、Embedding、向量检索和引用来源记录。
+- **Function Calling 工具箱**：支持查询员工联系方式、年假余额和审批中请假记录。
+- **AI 可观测性**：记录 `rag_search_log` 和 `tool_call_log`，可追踪模型回答依据和内部工具调用过程。
+- **工程化完整度**：MySQL、MyBatis-Plus、Flyway、Swagger、Actuator、统一异常、轻量级鉴权、CORS、H2 测试、GitHub Actions CI。
+- **可演示控制台**：启动后端后访问 `http://localhost:8080/`，可直接演示聊天、知识库、员工数据、RAG 引用和工具审计。
+
+### 技术栈
+
+| 分类 | 技术 |
+| --- | --- |
+| 后端 | JDK 21, Spring Boot 3.5, Spring WebFlux |
+| AI | Spring AI, OpenAI Compatible API, DeepSeek Chat, DashScope Embedding |
+| 数据库 | MySQL, MyBatis-Plus, Flyway, H2 Test Profile |
+| 向量库 | InMemoryVectorStore, Redis Stack VectorStore optional |
+| 接口 | RESTful API, Server-Sent Events, Swagger/OpenAPI |
+| 工程化 | Actuator, GitHub Actions, Smoke Test, Unified Error Response |
+
+### 快速演示
+
+```powershell
+mvn spring-boot:run "-Dspring-boot.run.profiles=local"
+```
+
+启动后访问：
+
+```text
+http://localhost:8080/
+```
+
+常用入口：
+
+- 架构说明：[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- 面试讲解指南：[docs/INTERVIEW_GUIDE.md](docs/INTERVIEW_GUIDE.md)
+- 截图占位目录：[docs/screenshots](docs/screenshots)
+- Swagger UI：`http://localhost:8080/swagger-ui.html`
+
+### 架构速览
+
+```mermaid
+flowchart LR
+    UI[演示控制台] --> API[REST / SSE API]
+    API --> Agent[ChatService Agent 编排]
+    Agent --> RAG[VectorStore RAG 检索]
+    Agent --> LLM[Spring AI ChatClient]
+    LLM --> Tools[Function Calling Tools]
+    Tools --> HR[(MySQL HR 数据)]
+    Agent --> Logs[(RAG 引用 / 工具审计)]
+    RAG --> VS[(InMemory / Redis VectorStore)]
+```
+
+更完整的 RAG 流程图、Function Calling 时序图和数据表说明见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。
