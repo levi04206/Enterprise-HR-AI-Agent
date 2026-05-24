@@ -84,3 +84,21 @@ app:
     # 默认开发模式关闭鉴权，避免影响本地接口调试。
     # 启用 secure profile 后会要求业务 API 携带 X-HR-EMPLOYEE-NAME，请求管理接口还需要 X-HR-ROLE=ADMIN。
     enabled: false
+  cors:
+    allowed-origins:
+      - http://localhost:5173
+      - http://127.0.0.1:5173
+      - http://localhost:3000
+      - http://127.0.0.1:3000
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - "*"
+    exposed-headers:
+      - Content-Type
+    allow-credentials: true
+    max-age: 3600

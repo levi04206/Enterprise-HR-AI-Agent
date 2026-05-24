@@ -282,3 +282,19 @@ mvn "-Dmaven.test.skip=true" package
 ```
 
 说明：SSE 流式对话接口在模型输出过程中发生的错误仍按流式响应链路处理，前端需要同时监听 SSE 连接异常。
+
+## 前端跨域配置
+
+后端已内置轻量级 CORS 过滤器，默认允许本地前端常用地址访问 REST 和 SSE 接口：
+
+```yaml
+app:
+  cors:
+    allowed-origins:
+      - http://localhost:5173
+      - http://127.0.0.1:5173
+      - http://localhost:3000
+      - http://127.0.0.1:3000
+```
+
+后续如果前端部署到其他域名，只需要调整 `app.cors.allowed-origins`。

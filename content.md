@@ -361,3 +361,20 @@ RAG 入库现在不仅写入向量库，也能在关系型数据库中追踪文�
 ### 当前状态
 
 普通 REST 接口现在会返回包含 `timestamp/status/error/message/path/details` 的结构化错误 JSON，前端后续做表单校验提示和接口异常提示会更稳定。
+## 2026-05-24 第十八次迭代
+
+### 本次完成内容
+
+1. 新增 `CorsProperties`，用 `app.cors` 管理前端跨域配置。
+2. 新增 `CorsConfig`，通过最高优先级 WebFilter 处理跨域响应头。
+3. 支持本地前端常用地址：
+   - `http://localhost:5173`
+   - `http://127.0.0.1:5173`
+   - `http://localhost:3000`
+   - `http://127.0.0.1:3000`
+4. 预检请求会在进入 Controller 前直接返回 HTTP 200，避免被后续路由或权限过滤器误拦截。
+5. 新增 `CorsConfigTest`，验证前端预检请求可以正常通过。
+
+### 当前状态
+
+后端已经具备前端联调所需的跨域基础能力。后续开发 Vue/React 页面时，可以直接从本地开发服务器调用后端 REST 接口和 SSE 流式对话接口。
