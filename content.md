@@ -346,3 +346,18 @@ RAG 入库现在不仅写入向量库，也能在关系型数据库中追踪文�
 ### 当前状态
 
 默认 MySQL 环境具备版本化数据库迁移能力。后续表结构变更应新增迁移脚本，而不是直接改历史 SQL。
+## 2026-05-24 第十七次迭代
+
+### 本次完成内容
+
+1. 增强全局异常处理器 `GlobalExceptionHandler`。
+2. 新增统一错误响应 DTO：`ApiErrorResponse`。
+3. 补充 WebFlux 场景下的请求体验证异常处理：`WebExchangeBindException`。
+4. 补充请求格式错误处理：`ServerWebInputException`。
+5. 补充兜底异常处理，避免接口直接暴露底层异常堆栈。
+6. 新增员工创建接口的非法请求体测试，验证字段级 `details` 能正确返回。
+7. 更新 `README.md`，记录统一错误响应结构。
+
+### 当前状态
+
+普通 REST 接口现在会返回包含 `timestamp/status/error/message/path/details` 的结构化错误 JSON，前端后续做表单校验提示和接口异常提示会更稳定。

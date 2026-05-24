@@ -263,3 +263,22 @@ mvn test
 ```powershell
 mvn "-Dmaven.test.skip=true" package
 ```
+
+## 统一错误响应
+
+普通 REST 接口的异常会统一返回结构化 JSON，便于前端根据 `status`、`message` 和 `details` 做提示：
+
+```json
+{
+  "timestamp": "2026-05-24T20:00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "message": "请求参数校验失败",
+  "path": "/api/v1/employees",
+  "details": {
+    "name": "员工姓名不能为空"
+  }
+}
+```
+
+说明：SSE 流式对话接口在模型输出过程中发生的错误仍按流式响应链路处理，前端需要同时监听 SSE 连接异常。

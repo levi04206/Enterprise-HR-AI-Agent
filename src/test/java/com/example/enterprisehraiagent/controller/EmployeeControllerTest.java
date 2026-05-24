@@ -56,4 +56,30 @@ class EmployeeControllerTest {
                 .jsonPath("$[0].email").isEqualTo("wangwu@example.com")
                 .jsonPath("$[0].annualLeaveBalance").isEqualTo(9);
     }
+
+    @Test
+    void createShouldReturnStructuredErrorWhenBodyInvalid() {
+        Map<String, Object> request = Map.of(
+                "name", "",
+                "department", "",
+                "email", "not-an-email",
+                "annualLeaveTotal", -1,
+                "annualLeaveUsed", -1
+        );
+
+        webTestClient.post()
+                .uri("/api/v1/employees")
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo(400)
+                .jsonPath("$.error").isEqualTo("Bad Request")
+                .jsonPath("$.message").isEqualTo("请求参数校验失败")
+                .jsonPath("$.path").isEqualTo("/api/v1/employees")
+                .jsonPath("$.details.name").exists()
+                .jsonPath("$.details.email").exists()
+                .jsonPath("$.details.annualLeaveTotal").exists()
+                .jsonPath("$.details.annualLeaveUsed").exists();
+    }
 }
