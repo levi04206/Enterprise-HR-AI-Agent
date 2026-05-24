@@ -378,3 +378,28 @@ RAG 入库现在不仅写入向量库，也能在关系型数据库中追踪文�
 ### 当前状态
 
 后端已经具备前端联调所需的跨域基础能力。后续开发 Vue/React 页面时，可以直接从本地开发服务器调用后端 REST 接口和 SSE 流式对话接口。
+## 2026-05-24 第十九次迭代
+
+### 本次完成内容
+
+1. 新增内置演示控制台，访问地址为 `http://localhost:8080/`。
+2. 新增静态资源：
+   - `src/main/resources/static/index.html`
+   - `src/main/resources/static/styles.css`
+   - `src/main/resources/static/app.js`
+3. 演示控制台支持：
+   - 创建和切换聊天会话
+   - 查看历史消息
+   - 调用 `/api/v1/chat/stream` 进行 SSE 流式对话
+   - 上传 PDF/TXT 知识库文档
+   - 查看知识库文档列表
+   - 查询员工基础数据和年假余额
+   - 调用模型诊断接口
+   - 可选填写企业网关模拟身份请求头
+4. 新增 `StaticFrontendControllerTest`，验证后端可以正确暴露演示首页。
+5. 新增 `docs/INTERVIEW_GUIDE.md`，整理项目定位、简历写法、面试讲解主线、常见问题和演示流程。
+6. 更新 `README.md`，补充演示控制台和面试讲解文档入口。
+
+### 当前状态
+
+项目现在不仅具备后端接口和 AI/RAG 能力，也具备可直接展示的浏览器演示页面，适合用于简历项目演示和 Java 后端实习面试讲解。

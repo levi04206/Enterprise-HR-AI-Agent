@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Enterprise HR AI Agent</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">HR</div>
+            <div>
+                <h1>Enterprise HR AI Agent</h1>
+                <p>企业 HR 智能助理控制台</p>
+            </div>
+        </div>
+
+        <section class="panel compact-panel">
+            <div class="panel-title">
+                <h2>身份</h2>
+                <span id="securityStatus">开发模式</span>
+            </div>
+            <label>
+                员工名
+                <input id="employeeHeader" type="text" placeholder="例如：张三">
+            </label>
+            <label>
+                角色
+                <select id="roleHeader">
+                    <option value="">EMPLOYEE</option>
+                    <option value="ADMIN">ADMIN</option>
+                </select>
+            </label>
+        </section>
+
+        <section class="panel sessions-panel">
+            <div class="panel-title">
+                <h2>会话</h2>
+                <button id="newSessionButton" type="button">新建</button>
+            </div>
+            <div id="sessionList" class="session-list"></div>
+        </section>
+    </aside>
+
+    <main class="workspace">
+        <section class="chat-surface">
+            <header class="workspace-header">
+                <div>
+                    <h2>HR 对话窗口</h2>
+                    <p id="activeSessionText">未选择会话时也可以直接提问</p>
+                </div>
+                <div class="header-actions">
+                    <button id="loadMessagesButton" type="button">刷新历史</button>
+                    <a href="/swagger-ui.html" target="_blank" rel="noreferrer">Swagger</a>
+                </div>
+            </header>
+
+            <div id="messages" class="messages"></div>
+
+            <form id="chatForm" class="composer">
+                <textarea id="messageInput" rows="3" placeholder="例如：张三还剩多少年假？公司的考勤制度是什么？"></textarea>
+                <button id="sendButton" type="submit">发送</button>
+            </form>
+        </section>
+
+        <aside class="right-rail">
+            <section class="panel">
+                <div class="panel-title">
+                    <h2>知识库</h2>
+                    <button id="refreshDocumentsButton" type="button">刷新</button>
+                </div>
+                <form id="uploadForm" class="upload-form">
+                    <input id="documentFile" type="file" accept=".txt,.pdf">
+                    <button type="submit">上传入库</button>
+                </form>
+                <div id="documentList" class="document-list"></div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-title">
+                    <h2>员工数据</h2>
+                    <button id="refreshEmployeesButton" type="button">刷新</button>
+                </div>
+                <input id="employeeKeyword" type="search" placeholder="按姓名或部门搜索">
+                <div id="employeeList" class="employee-list"></div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-title">
+                    <h2>模型诊断</h2>
+                    <button id="diagnosticsButton" type="button">检测</button>
+                </div>
+                <div id="diagnosticsResult" class="diagnostics-result">尚未检测</div>
+            </section>
+        </aside>
+    </main>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+<script src="/app.js"></script>
+</body>
+</html>
