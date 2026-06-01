@@ -21,6 +21,9 @@ public class AiDiagnosticsService {
     private final String chatModel;
     private final String embeddingModelName;
 
+    /**
+     * 注入聊天客户端、向量模型和模型名称配置。
+     */
     public AiDiagnosticsService(ChatClient hrChatClient,
                                 EmbeddingModel embeddingModel,
                                 @Value("${spring.ai.openai.chat.options.model:unknown}") String chatModel,
@@ -31,6 +34,9 @@ public class AiDiagnosticsService {
         this.embeddingModelName = embeddingModelName;
     }
 
+    /**
+     * 发送最小聊天请求，判断 Chat 模型链路是否可用。
+     */
     public AiDiagnosticResponse checkChat() {
         try {
             String content = chatClient.prompt()
@@ -48,6 +54,9 @@ public class AiDiagnosticsService {
         }
     }
 
+    /**
+     * 发送最小向量化请求，判断 Embedding 模型链路是否可用。
+     */
     public AiDiagnosticResponse checkEmbedding() {
         try {
             float[] vector = embeddingModel.embed("企业 HR AI Agent embedding health check");
@@ -60,6 +69,9 @@ public class AiDiagnosticsService {
         }
     }
 
+    /**
+     * 清理异常消息中的敏感认证信息。
+     */
     private String sanitize(Exception error) {
         String message = error.getMessage();
         if (!StringUtils.hasText(message)) {

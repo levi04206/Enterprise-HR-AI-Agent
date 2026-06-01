@@ -32,34 +32,58 @@ public class SecurityProperties {
             "/v3/api-docs"
     );
 
+    /**
+     * 判断是否启用轻量级鉴权。
+     */
     public boolean isEnabled() {
         return enabled;
     }
 
+    /**
+     * 设置是否启用轻量级鉴权。
+     */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
+    /**
+     * 获取员工姓名请求头名称。
+     */
     public String getEmployeeHeader() {
         return employeeHeader;
     }
 
+    /**
+     * 设置员工姓名请求头名称。
+     */
     public void setEmployeeHeader(String employeeHeader) {
         this.employeeHeader = employeeHeader;
     }
 
+    /**
+     * 获取角色请求头名称。
+     */
     public String getRoleHeader() {
         return roleHeader;
     }
 
+    /**
+     * 设置角色请求头名称。
+     */
     public void setRoleHeader(String roleHeader) {
         this.roleHeader = roleHeader;
     }
 
+    /**
+     * 获取免鉴权路径前缀列表。
+     */
     public List<String> getPermitAllPrefixes() {
         return permitAllPrefixes;
     }
 
+    /**
+     * 设置免鉴权路径前缀列表。
+     */
     public void setPermitAllPrefixes(List<String> permitAllPrefixes) {
         this.permitAllPrefixes = permitAllPrefixes;
     }

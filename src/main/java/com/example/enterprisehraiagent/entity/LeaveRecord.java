@@ -3,6 +3,7 @@ package com.example.enterprisehraiagent.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -18,13 +19,18 @@ import java.time.LocalDate;
 public class LeaveRecord {
 
     @TableId(type = IdType.AUTO)
+    @Schema(description = "请假记录主键 ID")
     private Long id;
 
+    @Schema(description = "请假员工 ID")
     private Long empId;
 
+    @Schema(description = "请假开始日期")
     private LocalDate startDate;
 
+    @Schema(description = "请假结束日期")
     private LocalDate endDate;
 
+    @Schema(description = "请假审批状态")
     private LeaveStatus status;
 }

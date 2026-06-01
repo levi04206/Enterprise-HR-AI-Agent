@@ -3,6 +3,7 @@ package com.example.enterprisehraiagent.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -18,13 +19,18 @@ import java.time.LocalDateTime;
 public class KnowledgeChunk {
 
     @TableId(type = IdType.AUTO)
+    @Schema(description = "知识库分块索引主键 ID")
     private Long id;
 
+    @Schema(description = "所属知识库文档 ID")
     private Long documentId;
 
+    @Schema(description = "向量库中的向量 ID")
     private String vectorId;
 
+    @Schema(description = "文档内的分块序号")
     private Integer chunkIndex;
 
+    @Schema(description = "分块索引创建时间")
     private LocalDateTime createdAt;
 }

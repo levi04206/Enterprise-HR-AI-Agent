@@ -21,6 +21,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 @Configuration
 public class VectorStoreConfig {
 
+    /**
+     * 创建默认内存向量库，用于本地快速跑通 RAG。
+     */
     @Bean
     @ConditionalOnProperty(name = "spring.ai.vectorstore.type", havingValue = "in-memory", matchIfMissing = true)
     public VectorStore vectorStore(EmbeddingModel embeddingModel) {

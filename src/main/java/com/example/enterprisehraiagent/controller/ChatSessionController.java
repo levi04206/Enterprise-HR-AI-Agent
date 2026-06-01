@@ -20,20 +20,32 @@ public class ChatSessionController {
 
     private final ChatHistoryService chatHistoryService;
 
+    /**
+     * 注入会话历史服务。
+     */
     public ChatSessionController(ChatHistoryService chatHistoryService) {
         this.chatHistoryService = chatHistoryService;
     }
 
+    /**
+     * 创建新的聊天会话并返回会话 ID。
+     */
     @PostMapping
     public Map<String, Long> create(@RequestBody ChatSessionCreateRequest request) {
         return Map.of("id", chatHistoryService.createSession(request));
     }
 
+    /**
+     * 查询所有聊天会话。
+     */
     @GetMapping
     public List<ChatSessionResponse> list() {
         return chatHistoryService.listSessions();
     }
 
+    /**
+     * 查询指定会话下的历史消息。
+     */
     @GetMapping("/{sessionId}/messages")
     public List<ChatMessageResponse> messages(@PathVariable Long sessionId) {
         return chatHistoryService.listMessages(sessionId);

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record EmployeeCreateRequest(
+public record EmployeeUpdateRequest(
         @NotBlank(message = "员工姓名不能为空")
         @Schema(description = "员工姓名")
         String name,

@@ -3,6 +3,7 @@ package com.example.enterprisehraiagent.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -17,15 +18,21 @@ import lombok.Data;
 public class Employee {
 
     @TableId(type = IdType.AUTO)
+    @Schema(description = "员工主键 ID")
     private Long id;
 
+    @Schema(description = "员工姓名")
     private String name;
 
+    @Schema(description = "所属部门")
     private String department;
 
+    @Schema(description = "员工邮箱")
     private String email;
 
+    @Schema(description = "员工总年假天数")
     private Integer annualLeaveTotal;
 
+    @Schema(description = "员工已使用年假天数")
     private Integer annualLeaveUsed;
 }

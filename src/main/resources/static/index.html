@@ -75,16 +75,98 @@
                     <input id="documentFile" type="file" accept=".txt,.pdf">
                     <button type="submit">上传入库</button>
                 </form>
+                <div class="query-row single-query">
+                    <input id="documentLookupId" type="number" min="1" step="1" placeholder="文档 ID">
+                    <button id="lookupDocumentButton" type="button">详情</button>
+                </div>
                 <div id="documentList" class="document-list"></div>
             </section>
 
             <section class="panel">
                 <div class="panel-title">
                     <h2>员工数据</h2>
-                    <button id="refreshEmployeesButton" type="button">刷新</button>
+                    <div class="panel-actions">
+                        <button id="resetEmployeeFormButton" type="button">清空</button>
+                        <button id="refreshEmployeesButton" type="button">刷新</button>
+                    </div>
                 </div>
-                <input id="employeeKeyword" type="search" placeholder="按姓名或部门搜索">
+                <form id="employeeForm" class="employee-form">
+                    <input id="employeeId" type="hidden">
+                    <label>
+                        姓名
+                        <input id="employeeName" type="text" placeholder="例如：王五">
+                    </label>
+                    <label>
+                        部门
+                        <input id="employeeDepartment" type="text" placeholder="例如：财务部">
+                    </label>
+                    <label>
+                        邮箱
+                        <input id="employeeEmail" type="email" placeholder="wangwu@example.com">
+                    </label>
+                    <div class="form-grid">
+                        <label>
+                            总年假
+                            <input id="employeeAnnualTotal" type="number" min="0" step="1" value="10">
+                        </label>
+                        <label>
+                            已用年假
+                            <input id="employeeAnnualUsed" type="number" min="0" step="1" value="0">
+                        </label>
+                    </div>
+                    <button id="saveEmployeeButton" type="submit">新增员工</button>
+                </form>
+                <div class="employee-query">
+                    <label>
+                        关键词查询
+                        <div class="query-row">
+                            <input id="employeeKeyword" type="search" placeholder="姓名、部门或邮箱">
+                            <button id="searchEmployeesButton" type="button">查询</button>
+                        </div>
+                    </label>
+                    <label>
+                        ID 查询
+                        <div class="query-row">
+                            <input id="employeeLookupId" type="number" min="1" step="1" placeholder="员工 ID">
+                            <button id="lookupEmployeeButton" type="button">查找</button>
+                        </div>
+                    </label>
+                </div>
                 <div id="employeeList" class="employee-list"></div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-title">
+                    <h2>请假记录</h2>
+                    <div class="panel-actions">
+                        <button id="refreshPendingLeaveRecordsButton" type="button">待审批</button>
+                        <button id="refreshLeaveRecordsButton" type="button">查询</button>
+                    </div>
+                </div>
+                <form id="leaveRecordForm" class="employee-form">
+                    <label>
+                        员工 ID
+                        <input id="leaveEmployeeId" type="number" min="1" step="1" placeholder="例如：1">
+                    </label>
+                    <div class="form-grid">
+                        <label>
+                            开始日期
+                            <input id="leaveStartDate" type="date">
+                        </label>
+                        <label>
+                            结束日期
+                            <input id="leaveEndDate" type="date">
+                        </label>
+                    </div>
+                    <label>
+                        提交状态
+                        <select id="leaveStatus">
+                            <option value="PENDING">PENDING</option>
+                        </select>
+                    </label>
+                    <button id="saveLeaveRecordButton" type="submit">新增请假</button>
+                </form>
+                <div id="leaveRecordList" class="audit-list"></div>
             </section>
 
             <section class="panel">
@@ -108,6 +190,10 @@
                     <h2>工具审计</h2>
                     <button id="refreshToolLogsButton" type="button">刷新</button>
                 </div>
+                <div class="query-row single-query">
+                    <input id="toolNameFilter" type="search" placeholder="工具名关键词">
+                    <button id="filterToolLogsButton" type="button">过滤</button>
+                </div>
                 <div id="toolLogList" class="audit-list"></div>
             </section>
         </aside>
@@ -115,6 +201,6 @@
 </div>
 
 <div id="toast" class="toast" hidden></div>
-<script src="/app.js"></script>
+<script src="/app.js?v=20260527-leave-review"></script>
 </body>
 </html>

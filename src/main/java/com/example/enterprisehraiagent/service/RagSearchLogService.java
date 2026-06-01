@@ -18,10 +18,16 @@ public class RagSearchLogService {
 
     private final RagSearchLogMapper ragSearchLogMapper;
 
+    /**
+     * 注入 RAG 检索日志数据访问对象。
+     */
     public RagSearchLogService(RagSearchLogMapper ragSearchLogMapper) {
         this.ragSearchLogMapper = ragSearchLogMapper;
     }
 
+    /**
+     * 保存一次向量检索命中的文档片段日志。
+     */
     public void saveSearchLogs(Long sessionId, String userMessage, List<Document> documents) {
         if (documents == null || documents.isEmpty()) {
             return;
@@ -47,6 +53,9 @@ public class RagSearchLogService {
         });
     }
 
+    /**
+     * 查询最近的 RAG 检索日志。
+     */
     public List<RagSearchLogResponse> listRecent(Long sessionId, Integer limit) {
         int pageSize = limit == null || limit <= 0 ? 50 : Math.min(limit, 200);
         LambdaQueryWrapper<RagSearchLog> wrapper = new LambdaQueryWrapper<RagSearchLog>()
@@ -62,6 +71,9 @@ public class RagSearchLogService {
                 .toList();
     }
 
+    /**
+     * 从向量库元数据中读取相似度分数。
+     */
     private Double readSimilarityScore(Map<String, Object> metadata) {
         for (String key : List.of("score", "similarity", "distance")) {
             Object value = metadata.get(key);
@@ -79,6 +91,9 @@ public class RagSearchLogService {
         return null;
     }
 
+    /**
+     * 将元数据值转换为 Long。
+     */
     private Long asLong(Object value) {
         if (value instanceof Number number) {
             return number.longValue();
@@ -89,6 +104,9 @@ public class RagSearchLogService {
         return null;
     }
 
+    /**
+     * 将元数据值转换为 Integer。
+     */
     private Integer asInteger(Object value) {
         if (value instanceof Number number) {
             return number.intValue();
@@ -99,10 +117,16 @@ public class RagSearchLogService {
         return null;
     }
 
+    /**
+     * 将元数据值转换为字符串。
+     */
     private String asString(Object value) {
         return value == null ? null : value.toString();
     }
 
+    /**
+     * 限制日志文本长度，避免数据库字段过长。
+     */
     private String limit(String text, int maxLength) {
         if (text == null || text.length() <= maxLength) {
             return text;

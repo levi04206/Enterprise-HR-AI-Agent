@@ -20,11 +20,17 @@ public class ChatHistoryService {
     private final ChatSessionMapper chatSessionMapper;
     private final ChatMessageMapper chatMessageMapper;
 
+    /**
+     * 注入会话和消息数据访问对象。
+     */
     public ChatHistoryService(ChatSessionMapper chatSessionMapper, ChatMessageMapper chatMessageMapper) {
         this.chatSessionMapper = chatSessionMapper;
         this.chatMessageMapper = chatMessageMapper;
     }
 
+    /**
+     * 创建聊天会话并初始化创建时间和更新时间。
+     */
     public Long createSession(ChatSessionCreateRequest request) {
         LocalDateTime now = LocalDateTime.now();
         ChatSession session = new ChatSession();
@@ -35,6 +41,9 @@ public class ChatHistoryService {
         return session.getId();
     }
 
+    /**
+     * 按最近更新时间倒序查询会话列表。
+     */
     public List<ChatSessionResponse> listSessions() {
         return chatSessionMapper.selectList(
                         new LambdaQueryWrapper<ChatSession>()
@@ -46,6 +55,9 @@ public class ChatHistoryService {
                 .toList();
     }
 
+    /**
+     * 查询指定会话的完整消息历史。
+     */
     public List<ChatMessageResponse> listMessages(Long sessionId) {
         ensureSessionExists(sessionId);
         return chatMessageMapper.selectList(
@@ -59,6 +71,9 @@ public class ChatHistoryService {
                 .toList();
     }
 
+    /**
+     * 查询最近若干条消息，用于注入模型上下文。
+     */
     public List<ChatMessage> listRecentMessages(Long sessionId, int limit) {
         ensureSessionExists(sessionId);
         if (limit <= 0) {
@@ -76,6 +91,9 @@ public class ChatHistoryService {
         return messages.reversed();
     }
 
+    /**
+     * 向会话追加一条用户或助手消息，并刷新会话更新时间。
+     */
     public void appendMessage(Long sessionId, String role, String content) {
         if (sessionId == null || !StringUtils.hasText(content)) {
             return;
@@ -95,6 +113,9 @@ public class ChatHistoryService {
         chatSessionMapper.updateById(session);
     }
 
+    /**
+     * 校验会话是否存在，不存在时抛出业务异常。
+     */
     public void ensureSessionExists(Long sessionId) {
         if (sessionId == null) {
             throw new IllegalArgumentException("sessionId 不能为空");

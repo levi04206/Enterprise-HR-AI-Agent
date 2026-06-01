@@ -18,11 +18,17 @@ public class ToolCallLogService {
     private final ToolCallLogMapper toolCallLogMapper;
     private final ObjectMapper objectMapper;
 
+    /**
+     * 注入工具调用日志数据访问对象和 JSON 序列化器。
+     */
     public ToolCallLogService(ToolCallLogMapper toolCallLogMapper, ObjectMapper objectMapper) {
         this.toolCallLogMapper = toolCallLogMapper;
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * 执行工具函数并记录入参、结果、耗时和成功状态。
+     */
     public String executeAndLog(String toolName, Object arguments, Supplier<String> supplier) {
         long startedAt = System.nanoTime();
         ToolCallLog log = new ToolCallLog();
@@ -45,6 +51,9 @@ public class ToolCallLogService {
         }
     }
 
+    /**
+     * 查询最近的工具调用日志，可按工具名关键词模糊匹配。
+     */
     public List<ToolCallLogResponse> listRecent(String toolName, Integer limit) {
         int pageSize = limit == null || limit <= 0 ? 50 : Math.min(limit, 200);
         LambdaQueryWrapper<ToolCallLog> wrapper = new LambdaQueryWrapper<ToolCallLog>()
@@ -52,7 +61,7 @@ public class ToolCallLogService {
                 .orderByDesc(ToolCallLog::getId)
                 .last("LIMIT " + pageSize);
         if (toolName != null && !toolName.isBlank()) {
-            wrapper.eq(ToolCallLog::getToolName, toolName.trim());
+            wrapper.apply("LOWER(tool_name) LIKE {0}", "%" + toolName.trim().toLowerCase() + "%");
         }
         return toolCallLogMapper.selectList(wrapper)
                 .stream()
@@ -60,6 +69,9 @@ public class ToolCallLogService {
                 .toList();
     }
 
+    /**
+     * 将工具入参序列化为 JSON 文本。
+     */
     private String toJson(Object value) {
         try {
             return objectMapper.writeValueAsString(value);
@@ -68,6 +80,9 @@ public class ToolCallLogService {
         }
     }
 
+    /**
+     * 限制日志文本长度，避免数据库字段过长。
+     */
     private String limit(String text, int maxLength) {
         if (text == null || text.length() <= maxLength) {
             return text;

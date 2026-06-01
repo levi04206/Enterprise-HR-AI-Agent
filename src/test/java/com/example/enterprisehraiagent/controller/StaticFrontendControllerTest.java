@@ -26,7 +26,15 @@ class StaticFrontendControllerTest {
                 .expectBody(String.class)
                 .value(body -> org.assertj.core.api.Assertions.assertThat(body)
                         .contains("Enterprise HR AI Agent")
-                        .contains("/app.js")
-                        .contains("/styles.css"));
+                        .contains("/app.js?v=20260527-leave-review")
+                        .contains("/styles.css")
+                        .contains("employeeForm")
+                        .contains("saveEmployeeButton")
+                        .contains("searchEmployeesButton")
+                        .contains("lookupEmployeeButton")
+                        .contains("leaveRecordForm")
+                        .contains("refreshPendingLeaveRecordsButton")
+                        .contains("lookupDocumentButton")
+                        .contains("filterToolLogsButton"));
     }
 }

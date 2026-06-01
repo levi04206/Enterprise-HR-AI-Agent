@@ -19,6 +19,9 @@ import java.util.List;
 @EnableConfigurationProperties(CorsProperties.class)
 public class CorsConfig {
 
+    /**
+     * 创建前端跨域过滤器，统一处理 CORS 响应头和预检请求。
+     */
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public WebFilter frontendCorsWebFilter(CorsProperties properties) {
@@ -56,6 +59,9 @@ public class CorsConfig {
         };
     }
 
+    /**
+     * 判断请求来源是否在允许的前端来源列表中。
+     */
     private boolean isAllowedOrigin(String origin, List<String> allowedOrigins) {
         return allowedOrigins.contains("*") || allowedOrigins.contains(origin);
     }

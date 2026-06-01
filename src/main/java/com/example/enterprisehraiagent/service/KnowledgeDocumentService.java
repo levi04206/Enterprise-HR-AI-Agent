@@ -18,6 +18,9 @@ public class KnowledgeDocumentService {
     private final KnowledgeChunkMapper knowledgeChunkMapper;
     private final VectorStore vectorStore;
 
+    /**
+     * 注入知识库文档、分块和向量库访问对象。
+     */
     public KnowledgeDocumentService(KnowledgeDocumentMapper knowledgeDocumentMapper,
                                     KnowledgeChunkMapper knowledgeChunkMapper,
                                     VectorStore vectorStore) {
@@ -26,6 +29,9 @@ public class KnowledgeDocumentService {
         this.vectorStore = vectorStore;
     }
 
+    /**
+     * 查询知识库文档列表。
+     */
     public List<KnowledgeDocumentResponse> list() {
         return knowledgeDocumentMapper.selectList(
                         new LambdaQueryWrapper<KnowledgeDocument>()
@@ -37,6 +43,9 @@ public class KnowledgeDocumentService {
                 .toList();
     }
 
+    /**
+     * 根据文档 ID 查询知识库文档详情。
+     */
     public KnowledgeDocumentResponse getById(Long id) {
         KnowledgeDocument document = knowledgeDocumentMapper.selectById(id);
         if (document == null) {
@@ -45,6 +54,9 @@ public class KnowledgeDocumentService {
         return KnowledgeDocumentResponse.from(document);
     }
 
+    /**
+     * 删除文档对应的向量分块并将文档标记为已删除。
+     */
     public KnowledgeDocumentResponse deleteById(Long id) {
         KnowledgeDocument document = knowledgeDocumentMapper.selectById(id);
         if (document == null) {

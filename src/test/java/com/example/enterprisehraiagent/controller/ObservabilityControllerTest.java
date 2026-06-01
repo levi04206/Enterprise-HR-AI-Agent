@@ -74,4 +74,33 @@ class ObservabilityControllerTest {
                 .jsonPath("$[0].success").isEqualTo(true)
                 .jsonPath("$[0].resultText").isEqualTo("张三剩余 10 天年假");
     }
+
+    @Test
+    void toolCallLogsShouldFuzzyMatchToolNameKeyword() {
+        ToolCallLog matched = new ToolCallLog();
+        matched.setToolName("getLeaveBalanceTool");
+        matched.setArgumentsJson("{\"employeeName\":\"张三\"}");
+        matched.setResultText("张三剩余 10 天年假");
+        matched.setSuccess(true);
+        matched.setDurationMs(12L);
+        matched.setCreatedAt(LocalDateTime.now());
+        toolCallLogMapper.insert(matched);
+
+        ToolCallLog unmatched = new ToolCallLog();
+        unmatched.setToolName("getEmployeeContactTool");
+        unmatched.setArgumentsJson("{\"employeeName\":\"李四\"}");
+        unmatched.setResultText("李四邮箱 lisi@example.com");
+        unmatched.setSuccess(true);
+        unmatched.setDurationMs(8L);
+        unmatched.setCreatedAt(LocalDateTime.now().minusSeconds(1));
+        toolCallLogMapper.insert(unmatched);
+
+        webTestClient.get()
+                .uri("/api/v1/observability/tool-call-logs?toolName=leave")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$[0].toolName").isEqualTo("getLeaveBalanceTool")
+                .jsonPath("$[1]").doesNotExist();
+    }
 }

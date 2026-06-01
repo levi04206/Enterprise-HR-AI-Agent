@@ -171,6 +171,12 @@ textarea:focus {
     margin-bottom: 12px;
 }
 
+.panel-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
 .panel-title h2 {
     font-size: 15px;
 }
@@ -352,6 +358,56 @@ textarea:focus {
     margin-top: 10px;
 }
 
+.employee-query {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.query-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 72px;
+    gap: 8px;
+}
+
+.single-query {
+    margin-bottom: 10px;
+}
+
+.employee-form {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.employee-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.employee-actions button {
+    min-height: 32px;
+    padding: 0 10px;
+}
+
+.danger-button {
+    border-color: #f1b8b2;
+    color: var(--danger);
+}
+
+.danger-button:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
 .audit-list {
     display: grid;
     gap: 8px;
@@ -385,15 +441,22 @@ textarea:focus {
 }
 
 .status.indexed,
-.status.up {
+.status.up,
+.status.approved {
     background: #e5f4ec;
     color: var(--success);
 }
 
 .status.failed,
-.status.down {
+.status.down,
+.status.rejected {
     background: #fdecec;
     color: var(--danger);
+}
+
+.status.pending {
+    background: #fff7df;
+    color: #8a5a00;
 }
 
 .diagnostics-result {

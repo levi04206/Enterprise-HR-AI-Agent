@@ -24,6 +24,9 @@ public class KnowledgeController {
     private final KnowledgeIngestionService knowledgeIngestionService;
     private final KnowledgeDocumentService knowledgeDocumentService;
 
+    /**
+     * 注入知识库入库服务和文档管理服务。
+     */
     public KnowledgeController(KnowledgeIngestionService knowledgeIngestionService,
                                KnowledgeDocumentService knowledgeDocumentService) {
         this.knowledgeIngestionService = knowledgeIngestionService;
@@ -36,21 +39,30 @@ public class KnowledgeController {
      * <p>示例：
      * curl -F "file=@2026员工考勤管理办法.txt" http://localhost:8080/api/v1/knowledge/ingest</p>
      */
-    @PostMapping(value = "/ingest", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/ingest", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//只接收“文件表单”格式的数据，不纯文本 JSON。
     public Mono<IngestResponse> ingest(@RequestPart("file") FilePart file) {
         return knowledgeIngestionService.ingest(file);
     }
 
+    /**
+     * 查询知识库文档列表。
+     */
     @GetMapping("/documents")
     public List<KnowledgeDocumentResponse> listDocuments() {
         return knowledgeDocumentService.list();
     }
 
+    /**
+     * 根据文档 ID 查询知识库文档详情。
+     */
     @GetMapping("/documents/{id}")
     public KnowledgeDocumentResponse getDocument(@PathVariable Long id) {
         return knowledgeDocumentService.getById(id);
     }
 
+    /**
+     * 根据文档 ID 删除知识库文档和对应向量索引。
+     */
     @DeleteMapping("/documents/{id}")
     public KnowledgeDocumentResponse deleteDocument(@PathVariable Long id) {
         return knowledgeDocumentService.deleteById(id);

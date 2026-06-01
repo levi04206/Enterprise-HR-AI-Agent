@@ -49,12 +49,12 @@ class LeaveRecordControllerTest {
     }
 
     @Test
-    void createShouldPersistLeaveRecord() {
+    void createShouldPersistPendingLeaveRecordWithoutDeductingBalance() {
         Map<String, Object> request = Map.of(
                 "empId", 1,
                 "startDate", "2026-07-01",
                 "endDate", "2026-07-02",
-                "status", "APPROVED"
+                "status", "PENDING"
         );
 
         webTestClient.post()
@@ -70,6 +70,96 @@ class LeaveRecordControllerTest {
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$[0].status").isEqualTo("APPROVED");
+                .jsonPath("$[0].status").isEqualTo("PENDING");
+
+        webTestClient.get()
+                .uri("/api/v1/employees/{id}", 1)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.annualLeaveUsed").isEqualTo(5)
+                .jsonPath("$.annualLeaveBalance").isEqualTo(10);
+    }
+
+    @Test
+    void reviewShouldApprovePendingLeaveRecordAndDeductAnnualLeaveBalance() {
+        Map<String, Object> request = Map.of(
+                "empId", 1,
+                "startDate", "2026-07-01",
+                "endDate", "2026-07-02",
+                "status", "PENDING"
+        );
+
+        Map<?, ?> createResponse = webTestClient.post()
+                .uri("/api/v1/leave-records")
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Map.class)
+                .returnResult()
+                .getResponseBody();
+        Long id = ((Number) createResponse.get("id")).longValue();
+
+        webTestClient.patch()
+                .uri("/api/v1/leave-records/{id}/status", id)
+                .bodyValue(Map.of("status", "APPROVED"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo("APPROVED");
+
+        webTestClient.get()
+                .uri("/api/v1/employees/{id}", 1)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.annualLeaveUsed").isEqualTo(7)
+                .jsonPath("$.annualLeaveBalance").isEqualTo(8);
+    }
+
+    @Test
+    void reviewShouldRejectPendingLeaveRecordWithoutDeductingAnnualLeaveBalance() {
+        Map<String, Object> request = Map.of(
+                "empId", 1,
+                "startDate", "2026-07-01",
+                "endDate", "2026-07-03",
+                "status", "PENDING"
+        );
+
+        Map<?, ?> createResponse = webTestClient.post()
+                .uri("/api/v1/leave-records")
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Map.class)
+                .returnResult()
+                .getResponseBody();
+        Long id = ((Number) createResponse.get("id")).longValue();
+
+        webTestClient.patch()
+                .uri("/api/v1/leave-records/{id}/status", id)
+                .bodyValue(Map.of("status", "REJECTED"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo("REJECTED");
+
+        webTestClient.get()
+                .uri("/api/v1/employees/{id}", 1)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.annualLeaveUsed").isEqualTo(5)
+                .jsonPath("$.annualLeaveBalance").isEqualTo(10);
+    }
+
+    @Test
+    void listShouldReturnPendingLeaveRecords() {
+        webTestClient.get()
+                .uri("/api/v1/leave-records?status=PENDING")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$[0].status").isEqualTo("PENDING");
     }
 }

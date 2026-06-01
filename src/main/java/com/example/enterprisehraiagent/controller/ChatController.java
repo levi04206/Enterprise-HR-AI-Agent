@@ -2,9 +2,9 @@ package com.example.enterprisehraiagent.controller;
 
 import com.example.enterprisehraiagent.dto.ChatRequest;
 import com.example.enterprisehraiagent.service.ChatService;
-import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +17,9 @@ public class ChatController {
 
     private final ChatService chatService;
 
+    /**
+     * 注入流式对话服务。
+     */
     public ChatController(ChatService chatService) {
         this.chatService = chatService;
     }
@@ -28,7 +31,10 @@ public class ChatController {
      * 返回值：text/event-stream，每个 SSE data 片段是一段模型增量输出。</p>
      */
     @PostMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ServerSentEvent<String>> stream(@Valid @RequestBody ChatRequest request) {
+    public Flux<ServerSentEvent<String>> stream(@RequestBody ChatRequest request) {
+        if (request == null || !StringUtils.hasText(request.message())) {
+            return Flux.just(ServerSentEvent.builder("对话失败：请输入要咨询的问题").event("error").build());
+        }
         return chatService.streamChat(request.message(), request.sessionId())
                 .map(token -> ServerSentEvent.builder(token).event("message").build())
                 .concatWithValues(ServerSentEvent.builder("[DONE]").event("done").build())

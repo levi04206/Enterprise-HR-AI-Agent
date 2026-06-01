@@ -37,6 +37,9 @@ public class KnowledgeIngestionService {
     private final KnowledgeChunkMapper knowledgeChunkMapper;
     private final TokenTextSplitter tokenTextSplitter = new TokenTextSplitter();
 
+    /**
+     * 注入向量库和知识库表的数据访问对象。
+     */
     public KnowledgeIngestionService(VectorStore vectorStore,
                                      KnowledgeDocumentMapper knowledgeDocumentMapper,
                                      KnowledgeChunkMapper knowledgeChunkMapper) {
@@ -45,6 +48,9 @@ public class KnowledgeIngestionService {
         this.knowledgeChunkMapper = knowledgeChunkMapper;
     }
 
+    /**
+     * 接收上传文件并异步完成知识库入库。
+     */
     public Mono<IngestResponse> ingest(FilePart filePart) {
         return Mono.usingWhen(
                 createTempFile(filePart),
@@ -55,6 +61,9 @@ public class KnowledgeIngestionService {
         );
     }
 
+    /**
+     * 为上传文件创建临时落盘文件。
+     */
     private Mono<Path> createTempFile(FilePart filePart) {
         return Mono.fromCallable(() -> {
             String suffix = getSuffix(filePart.filename());
@@ -62,10 +71,13 @@ public class KnowledgeIngestionService {
         }).subscribeOn(Schedulers.boundedElastic());
     }
 
+    /**
+     * 阻塞执行文档解析、分块、向量化和数据库记录写入。
+     */
     private IngestResponse ingestBlocking(FilePart filePart, Path tempFile) {
-        TikaDocumentReader reader = new TikaDocumentReader(new FileSystemResource(tempFile));
+        TikaDocumentReader reader = new TikaDocumentReader(new FileSystemResource(tempFile));//把排版全扔掉改为纯文本
         List<Document> rawDocuments = reader.get();
-        List<Document> splitChunks = tokenTextSplitter.apply(rawDocuments);
+        List<Document> splitChunks = tokenTextSplitter.apply(rawDocuments);//分块
 
         KnowledgeDocument knowledgeDocument = new KnowledgeDocument();
         knowledgeDocument.setFilename(filePart.filename());
@@ -79,6 +91,7 @@ public class KnowledgeIngestionService {
         knowledgeDocumentMapper.insert(knowledgeDocument);
 
         try {
+            //给每个知识库分块附加文档 ID、文件名和分块序号。
             List<Document> chunks = attachBusinessMetadata(splitChunks, knowledgeDocument);
             vectorStore.add(chunks);
             saveChunkIndex(knowledgeDocument.getId(), chunks);
@@ -100,6 +113,9 @@ public class KnowledgeIngestionService {
         );
     }
 
+    /**
+     * 给每个知识库分块附加文档 ID、文件名和分块序号。
+     */
     private List<Document> attachBusinessMetadata(List<Document> chunks, KnowledgeDocument knowledgeDocument) {
         return IntStream.range(0, chunks.size())
                 .mapToObj(index -> {
@@ -113,6 +129,9 @@ public class KnowledgeIngestionService {
                 .toList();
     }
 
+    /**
+     * 保存文档分块和向量 ID 的对应关系。
+     */
     private void saveChunkIndex(Long documentId, List<Document> chunks) {
         LocalDateTime now = LocalDateTime.now();
         for (int i = 0; i < chunks.size(); i++) {
@@ -125,11 +144,17 @@ public class KnowledgeIngestionService {
         }
     }
 
+    /**
+     * 从文件名中提取临时文件后缀。
+     */
     private static String getSuffix(String filename) {
         int dotIndex = filename == null ? -1 : filename.lastIndexOf('.');
         return dotIndex >= 0 ? filename.substring(dotIndex) : ".tmp";
     }
 
+    /**
+     * 安静删除临时文件，删除失败不影响主流程。
+     */
     private static void deleteQuietly(Path tempFile) {
         try {
             Files.deleteIfExists(tempFile);

@@ -25,6 +25,9 @@ import java.util.List;
 @Configuration
 public class OpenApiConfig {
 
+    /**
+     * 创建 OpenAPI 元信息配置，供 Swagger UI 展示接口文档。
+     */
     @Bean
     public OpenAPI enterpriseHrOpenAPI() {
         return new OpenAPI()

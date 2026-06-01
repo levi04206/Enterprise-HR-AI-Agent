@@ -27,7 +27,8 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
-    baseline-on-migrate: true
+    # 关闭自动 baseline，避免非空数据库被标记为已执行 V1，导致基础表未创建但后续迁移继续执行。
+    baseline-on-migrate: false
     validate-on-migrate: true
 
   ai:
@@ -44,7 +45,7 @@ spring:
           temperature: ${AI_CHAT_TEMPERATURE:0.5}
       embedding:
         # Embedding 使用阿里 DashScope OpenAI 兼容模式，和 DeepSeek Chat 分开配置。
-        base-url: ${AI_EMBEDDING_BASE_URL:https://dashscope.aliyuncs.com/compatible-mode/v1}
+        base-url: ${AI_EMBEDDING_BASE_URL:https://dashscope.aliyuncs.com/compatible-mode}
         api-key: ${DASHSCOPE_API_KEY:${AI_EMBEDDING_API_KEY:replace-me}}
         options:
           model: ${AI_EMBEDDING_MODEL:text-embedding-v4}

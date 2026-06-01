@@ -24,7 +24,12 @@ class SecurityWebFilterTest {
         webTestClient.get()
                 .uri("/api/v1/employees")
                 .exchange()
-                .expectStatus().isUnauthorized();
+                .expectStatus().isUnauthorized()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo(401)
+                .jsonPath("$.code").isEqualTo("UNAUTHORIZED")
+                .jsonPath("$.message").isEqualTo("缺少员工身份请求头")
+                .jsonPath("$.path").isEqualTo("/api/v1/employees");
     }
 
     @Test
@@ -49,7 +54,57 @@ class SecurityWebFilterTest {
                         "annualLeaveUsed", 0
                 ))
                 .exchange()
-                .expectStatus().isForbidden();
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("$.status").isEqualTo(403)
+                .jsonPath("$.code").isEqualTo("FORBIDDEN")
+                .jsonPath("$.message").isEqualTo("当前角色无权访问该接口")
+                .jsonPath("$.path").isEqualTo("/api/v1/employees");
+    }
+
+    @Test
+    void diagnosticsApiShouldRejectNonAdminRole() {
+        webTestClient.get()
+                .uri("/api/v1/diagnostics/chat")
+                .header("X-HR-EMPLOYEE-NAME", "张三")
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("$.code").isEqualTo("FORBIDDEN")
+                .jsonPath("$.path").isEqualTo("/api/v1/diagnostics/chat");
+    }
+
+    @Test
+    void observabilityApiShouldRejectNonAdminRole() {
+        webTestClient.get()
+                .uri("/api/v1/observability/rag-search-logs")
+                .header("X-HR-EMPLOYEE-NAME", "张三")
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("$.code").isEqualTo("FORBIDDEN")
+                .jsonPath("$.path").isEqualTo("/api/v1/observability/rag-search-logs");
+    }
+
+    @Test
+    void knowledgeWriteApiShouldRejectNonAdminRole() {
+        webTestClient.delete()
+                .uri("/api/v1/knowledge/documents/{id}", 1)
+                .header("X-HR-EMPLOYEE-NAME", "张三")
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("$.code").isEqualTo("FORBIDDEN")
+                .jsonPath("$.path").isEqualTo("/api/v1/knowledge/documents/1");
+    }
+
+    @Test
+    void knowledgeReadApiShouldAllowEmployeeRole() {
+        webTestClient.get()
+                .uri("/api/v1/knowledge/documents")
+                .header("X-HR-EMPLOYEE-NAME", "张三")
+                .exchange()
+                .expectStatus().isOk();
     }
 
     @Test

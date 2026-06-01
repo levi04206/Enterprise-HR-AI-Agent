@@ -22,10 +22,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AiConfig {
 
+    /**
+     * 创建 HR Agent 使用的 ChatClient，并注册可供模型调用的工具。
+     */
     @Bean
     public ChatClient hrChatClient(ChatClient.Builder builder) {
         return builder
-                .defaultToolNames("getEmployeeContactTool", "getLeaveBalanceTool")
+                .defaultToolNames("getEmployeeContactTool", "getLeaveBalanceTool", "getCompanyEmployeeSummaryTool")
                 .build();
     }
 }
