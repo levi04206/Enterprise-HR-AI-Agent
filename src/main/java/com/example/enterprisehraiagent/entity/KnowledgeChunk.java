@@ -31,6 +31,9 @@ public class KnowledgeChunk {
     @Schema(description = "文档内的分块序号")
     private Integer chunkIndex;
 
+    @Schema(description = "分块原文内容，用于内存向量库重启后的索引重建")
+    private String content;
+
     @Schema(description = "分块索引创建时间")
     private LocalDateTime createdAt;
 }

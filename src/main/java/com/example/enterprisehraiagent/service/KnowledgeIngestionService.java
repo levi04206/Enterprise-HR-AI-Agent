@@ -139,6 +139,7 @@ public class KnowledgeIngestionService {
             knowledgeChunk.setDocumentId(documentId);
             knowledgeChunk.setVectorId(chunks.get(i).getId());
             knowledgeChunk.setChunkIndex(i);
+            knowledgeChunk.setContent(chunks.get(i).getText());
             knowledgeChunk.setCreatedAt(now);
             knowledgeChunkMapper.insert(knowledgeChunk);
         }

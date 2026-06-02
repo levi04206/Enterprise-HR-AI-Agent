@@ -42,6 +42,7 @@ CREATE TABLE knowledge_chunk (
     document_id BIGINT NOT NULL,
     vector_id VARCHAR(128) NOT NULL,
     chunk_index INT NOT NULL,
+    content TEXT NULL,
     created_at DATETIME NOT NULL,
     UNIQUE KEY uk_knowledge_chunk_vector_id (vector_id),
     KEY idx_knowledge_chunk_document_id (document_id)
